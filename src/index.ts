@@ -37,11 +37,7 @@ async function main() {
       `Solved day${day} part${part} in ${prettyNumber(endTime - startTime)}ms`
     );
 
-    const outputPath = path.join(
-      "src",
-      `day${day}`,
-      `output_day${day}_part${part}.txt`
-    );
+    const outputPath = path.join("src", `day${day}`, `output_part${part}.txt`);
     console.log(`Writing output to '${outputPath}'`);
     await writeFile(outputPath, result);
 
