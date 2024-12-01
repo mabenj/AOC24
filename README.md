@@ -2,4 +2,6 @@
 
 ### Usage
 
+`pnpm install` will install all dependencies
+
 `pnpm run solve <day.part>` will run the solver for the given day and part
