@@ -3,8 +3,6 @@ import path from "path";
 import { prettyNumber } from "./utils";
 import { Day1Part1 } from "./day1/part1";
 import { Day1Part2 } from "./day1/part2";
-import { Day2Part1 } from "./day2/part1";
-import { Day2Part2 } from "./day2/part2";
 import { PuzzleSolver } from "./types/puzzle-solver";
 
 async function main(args: string[]) {
@@ -50,8 +48,6 @@ class SolverFactory {
   private static readonly solverMap: Record<string, PuzzleSolver> = {
     "1.1": new Day1Part1(),
     "1.2": new Day1Part2(),
-    "2.1": new Day2Part1(),
-    "2.2": new Day2Part2(),
   };
 
   private constructor() {}
