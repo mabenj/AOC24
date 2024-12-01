@@ -1,4 +1,4 @@
-import { PuzzleSolver } from "../puzzle-solver";
+import { PuzzleSolver } from "../types/puzzle-solver";
 
 export class DayXPart2 implements PuzzleSolver {
   solve(input: string): string {
