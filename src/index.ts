@@ -1,6 +1,7 @@
 import { readFile, writeFile } from "fs/promises";
 import path from "path";
 import { SolverMap } from "./solver-map";
+import { prettyNumber } from "./utils";
 
 const args = process.argv.slice(2);
 
@@ -29,10 +30,18 @@ async function main() {
       return -1;
     }
 
-    console.log(`Solving day${day} part${part}...`);
+    const startTime = performance.now();
     const result = solver.solve(input);
+    const endTime = performance.now();
+    console.log(
+      `Solved day${day} part${part} in ${prettyNumber(endTime - startTime)}ms`
+    );
 
-    const outputPath = path.join("src", `day${day}`, `output.txt`);
+    const outputPath = path.join(
+      "src",
+      `day${day}`,
+      `output_day${day}_part${part}.txt`
+    );
     console.log(`Writing output to '${outputPath}'`);
     await writeFile(outputPath, result);
 
