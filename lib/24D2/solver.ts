@@ -1,13 +1,22 @@
-import { PuzzleSolver } from "../types/puzzle-solver";
+import { PuzzleSolver } from "../types/puzzle-solver.ts";
 
-export class Day2Part2 implements PuzzleSolver {
-    solve(input: string): string {
-        const reports = input
-            .split("\r\n")
+export default class Solver24D2 implements PuzzleSolver {
+    private reports: number[][] = [];
+
+    parseInput(input: string[]) {
+        this.reports = input
             .filter((line) => !!line)
             .map((line) => line.split(" ").map((num) => +num));
-        const safeReports = reports.filter((report) => isSafeReport(report));
-        return safeReports.length.toString();
+    }
+
+    solvePart1() {
+        return this.reports.filter((report) => isSafeReport(report, false))
+            .length;
+    }
+
+    solvePart2() {
+        return this.reports.filter((report) => isSafeReport(report, true))
+            .length;
     }
 }
 
