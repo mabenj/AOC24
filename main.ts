@@ -18,28 +18,21 @@ async function main() {
     switch (verb) {
         case "solve":
             if (!day || !["1", "2"].includes(part)) {
-                printUsage();
-                break;
+                return printUsage();
             }
-            await solve(year, day, part);
-            break;
+            return await solve(year, day, part);
         case "init":
             if (!day) {
-                printUsage();
-                break;
+                return printUsage();
             }
-            await init(year, day);
-            break;
+            return init(year, day);
         case "submit":
             if (!answer || !day || !["1", "2"].includes(part)) {
-                printUsage();
-                break;
+                return printUsage();
             }
-            await submit(answer, year, day, part);
-            break;
-        default: {
-            printUsage();
-        }
+            return submit(answer, year, day, part);
+        default:
+            return printUsage();
     }
 }
 
