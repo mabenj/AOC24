@@ -1,7 +1,9 @@
-# Advent of Code 2024
+# Advent of Code in Deno/TypeScript
 
 ### Usage
 
-`deno main.ts -y <year> -d <day> -p <1 | 2>` will run the solver for the given year, day, and part
+`deno main.ts solve -d <day> -p <1 | 2> [-y <year>]` will solve the puzzle for the given day and part.
 
-`deno test` will run all tests
+`deno main.ts init -d <day> [-y <year>]` will initialize the puzzle for the given day into the `lib` directory.
+
+`deno test` will run the tests.

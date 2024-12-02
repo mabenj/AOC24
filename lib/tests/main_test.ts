@@ -1,8 +1,8 @@
 import { assertEquals, assertExists } from "@std/assert";
-import SolverFactory from "./lib/solver-factory.ts";
+import SolverFactory from "../solver-factory.ts";
 import * as path from "jsr:@std/path";
-import { PuzzleSolver } from "./lib/types/puzzle-solver.ts";
-import { LINE_SEPARATOR } from "./lib/common.ts";
+import { PuzzleSolver } from "../types/puzzle-solver.ts";
+import { LINE_SEPARATOR } from "../common.ts";
 
 const ANSWERS: { [id: string]: (string | number)[] } = {
     "23D1": [54644, 53348],

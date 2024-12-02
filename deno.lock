@@ -3,6 +3,7 @@
   "specifiers": {
     "jsr:@std/assert@1": "1.0.8",
     "jsr:@std/cli@*": "1.0.7",
+    "jsr:@std/dotenv@*": "0.225.2",
     "jsr:@std/internal@^1.0.5": "1.0.5",
     "jsr:@std/path@*": "1.0.8"
   },
@@ -15,6 +16,9 @@
     },
     "@std/cli@1.0.7": {
       "integrity": "98359df9df586a69015ba570305183b0cb9e7d53c05ea2016ef9a3e77e82c7cd"
+    },
+    "@std/dotenv@0.225.2": {
+      "integrity": "e2025dce4de6c7bca21dece8baddd4262b09d5187217e231b033e088e0c4dd23"
     },
     "@std/internal@1.0.5": {
       "integrity": "54a546004f769c1ac9e025abd15a76b6671ddc9687e2313b67376125650dc7ba"
