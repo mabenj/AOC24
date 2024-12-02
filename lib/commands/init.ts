@@ -1,18 +1,12 @@
 import * as path from "jsr:@std/path";
-import { prettyNumber } from "../common.ts";
-import { DOMParser } from "jsr:@b-fuze/deno-dom";
-import { NodeHtmlMarkdown } from "npm:node-html-markdown";
+import { fetchInput, fetchPuzzle, prettyNumber } from "../common.ts";
 
 export default async function init(year: string, day: string) {
     const startTime = performance.now();
     const id = `${year}D${day}`;
-    const inputUrl = `https://adventofcode.com/20${year}/day/${day}/input`;
-    const puzzleUrl = `https://adventofcode.com/20${year}/day/${day}`;
 
-    console.log(`Fetching input from %c${inputUrl}`, "color: gray");
-    const input = await fetchInput(inputUrl);
-    console.log(`Fetching puzzle from %c${puzzleUrl}`, "color: gray");
-    const puzzle = await fetchPuzzle(puzzleUrl);
+    const puzzle = await fetchPuzzle(year, day);
+    const input = await fetchInput(year, day);
     const solverClass = generateSolverClass(id);
 
     const directoryPath = path.join("lib", id);
@@ -41,46 +35,6 @@ export default async function init(year: string, day: string) {
     console.log(
         "Do not forget to update 'lib/solver-factory.ts' with the new solver!"
     );
-}
-
-async function fetchInput(url: string) {
-    const sessionToken = Deno.env.get("AOC_SESSION");
-    if (!sessionToken) {
-        throw new Error("Missing 'AOC_SESSION' environment variable");
-    }
-    const res = await fetch(url, {
-        headers: { cookie: `session=${Deno.env.get("AOC_SESSION")}` },
-    });
-    if (!res.ok) {
-        throw new Error(
-            `Failed to fetch input: ${res.status} (${res.statusText})`
-        );
-    }
-    const input = await res.text();
-    return input;
-}
-
-async function fetchPuzzle(url: string) {
-    const sessionToken = Deno.env.get("AOC_SESSION");
-    if (!sessionToken) {
-        throw new Error("Missing 'AOC_SESSION' environment variable");
-    }
-    const res = await fetch(url, {
-        headers: { cookie: `session=${Deno.env.get("AOC_SESSION")}` },
-    });
-    if (!res.ok) {
-        throw new Error(
-            `Failed to fetch puzzle: ${res.status} (${res.statusText})`
-        );
-    }
-    const html = await res.text();
-    const doc = new DOMParser().parseFromString(html, "text/html");
-    const puzzle = Array.from(doc.querySelectorAll(".day-desc"))
-        .map((el) => el.innerHTML || "")
-        .join("\n");
-    const nhm = new NodeHtmlMarkdown();
-    const markdown = nhm.translate(puzzle);
-    return markdown;
 }
 
 function generateSolverClass(id: string) {

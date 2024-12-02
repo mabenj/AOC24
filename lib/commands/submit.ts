@@ -1,4 +1,6 @@
 import { DOMParser } from "jsr:@b-fuze/deno-dom";
+import { fetchPuzzle } from "../common.ts";
+import * as path from "jsr:@std/path";
 
 export default async function submit(
     answer: string | number,
@@ -35,6 +37,9 @@ export default async function submit(
         doc.querySelector("p")?.textContent?.trim().toLowerCase() || "";
     if (result.startsWith("that's the right answer")) {
         console.log(`Answer is correct! %c(${answer})`, "color: green");
+        if (part === "1") {
+            await updatePuzzle(year, day);
+        }
     } else if (result.startsWith("that's not the right answer")) {
         console.log(`Answer is incorrect! %c(${answer})`, "color: red");
     } else if (result.startsWith("you gave an answer too recently")) {
@@ -45,4 +50,15 @@ export default async function submit(
     } else {
         throw new Error("Unexpected response when submitting answer");
     }
+}
+
+async function updatePuzzle(year: string, day: string) {
+    console.log(`Updating puzzle`);
+    const puzzle = await fetchPuzzle(year, day);
+    const dir = path.join("lib", `${year}D${day}`);
+    const puzzlePath = path.join(dir, "README.md");
+    console.log(`Writing puzzle to %c${puzzlePath}`, "color: gray");
+    await Deno.mkdir(dir, { recursive: true });
+    await Deno.writeTextFile(puzzlePath, puzzle);
+    console.log(`Puzzle updated!`);
 }
