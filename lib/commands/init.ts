@@ -1,10 +1,7 @@
 import * as path from "jsr:@std/path";
 import { prettyNumber } from "../common.ts";
 import { DOMParser } from "jsr:@b-fuze/deno-dom";
-import {
-    NodeHtmlMarkdown,
-    NodeHtmlMarkdownOptions,
-} from "npm:node-html-markdown";
+import { NodeHtmlMarkdown } from "npm:node-html-markdown";
 
 export default async function init(year: string, day: string) {
     const startTime = performance.now();

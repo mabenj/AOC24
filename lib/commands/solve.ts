@@ -2,7 +2,8 @@ import { LINE_SEPARATOR, prettyNumber } from "../common.ts";
 import SolverFactory from "../solver-factory.ts";
 import * as path from "jsr:@std/path";
 
-export default async function solve(puzzleId: string, part: string) {
+export default async function solve(year: string, day: string, part: string) {
+    const puzzleId = `${year}D${day}`;
     try {
         const solver = SolverFactory.getSolver(puzzleId);
         const solveMethod =
