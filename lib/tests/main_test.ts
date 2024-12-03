@@ -1,7 +1,6 @@
 import { assertEquals, assertExists } from "@std/assert";
 import SolverFactory from "../solver-factory.ts";
 import * as path from "jsr:@std/path";
-import { PuzzleSolver } from "../types/puzzle-solver.ts";
 import { LINE_SEPARATOR } from "../common.ts";
 
 const ANSWERS: { [id: string]: (string | number)[] } = {
@@ -16,33 +15,20 @@ const ANSWERS: { [id: string]: (string | number)[] } = {
 const solverIds = SolverFactory.getSolverIds();
 
 for (const id of solverIds) {
-    Deno.test(`Solver ${id} works as expected`, async (t) => {
-        let solver: PuzzleSolver;
-        await t.step("solver exists", () => {
-            solver = SolverFactory.getSolver(id);
-        });
-        await t.step(`solver can parse input`, async () => {
-            const input = await Deno.readTextFile(
-                path.join("lib", id, "input.txt")
-            );
-            assertExists(input, `No input found for ${id}`);
+    Deno.test(`Solver ${id} works as expected`, async () => {
+        const input = await Deno.readTextFile(
+            path.join("lib", id, "input.txt")
+        );
+        assertExists(input, `No input`);
+
+        for (const part of ["1", "2"]) {
+            const solver = SolverFactory.getSolver(id);
             solver.parseInput(input.split(LINE_SEPARATOR));
-        });
-        await t.step(`solver can solve part 1`, () => {
-            const output = solver.solvePart1();
-            assertEquals(
-                output,
-                ANSWERS[id][0],
-                `Incorrect output for ${id} part 1`
-            );
-        });
-        await t.step(`solver can solve part 2`, () => {
-            const output = solver.solvePart2();
-            assertEquals(
-                output,
-                ANSWERS[id][1],
-                `Incorrect output for ${id} part 2`
-            );
-        });
+
+            const output =
+                part === "1" ? solver.solvePart1() : solver.solvePart2();
+            const expected = ANSWERS[id][Number(part) - 1];
+            assertEquals(output, expected, `Incorrect output`);
+        }
     });
 }

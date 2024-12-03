@@ -36,6 +36,8 @@ export default class Solver24D3 implements PuzzleSolver {
             },
         ];
 
+        this.isDoEnabled = true;
+        this.sum = 0;
         let remaining = this.input;
         while (remaining.length > 0) {
             const handler = HANDLERS.find(
