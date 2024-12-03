@@ -41,12 +41,27 @@ export default async function submit(
             await updatePuzzle(year, day);
         }
     } else if (result.startsWith("that's not the right answer")) {
-        console.log(`Answer is incorrect! %c(${answer})`, "color: red");
+        if (result.includes("answer is too low")) {
+            console.log(`Answer is too low! %c(${answer})`, "color: red");
+        } else if (result.includes("answer is too high")) {
+            console.log(`Answer is too high! %c(${answer})`, "color: red");
+        } else {
+            console.log(`Answer is incorrect! %c(${answer})`, "color: red");
+        }
     } else if (result.startsWith("you gave an answer too recently")) {
         console.log(
             `You gave an answer too recently! %c(${answer})`,
             "color: yellow"
         );
+    } else if (
+        result.startsWith("you don't seem to be solving the right level")
+    ) {
+        console.log(
+            "You don't seem to be solving the right level. Did you already complete it?"
+        );
+        if (part === "1") {
+            await updatePuzzle(year, day);
+        }
     } else {
         throw new Error("Unexpected response when submitting answer");
     }

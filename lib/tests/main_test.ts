@@ -10,6 +10,7 @@ const ANSWERS: { [id: string]: (string | number)[] } = {
     "23D3": [536576, -1],
     "24D1": [2344935, 27647262],
     "24D2": [421, 476],
+    "24D3": [157621318, 79845780],
 };
 
 const solverIds = SolverFactory.getSolverIds();
