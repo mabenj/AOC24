@@ -1,7 +1,5 @@
 import { PuzzleSolver } from "../types/puzzle-solver.ts";
 
-type Coordinate = { x: number; y: number };
-
 export default class Solver23D3 implements PuzzleSolver {
     private matrix: string[][] = [];
 
@@ -15,19 +13,13 @@ export default class Solver23D3 implements PuzzleSolver {
         let sum = 0;
         for (let y = 0; y < this.matrix.length; y++) {
             for (let x = 0; x < this.matrix[y].length; x++) {
-                let partNumberCandidate = this.matrix[y][x];
-                if (!isDigit(partNumberCandidate)) {
+                if (!isSymbol(this.matrixAt(x, y))) {
                     continue;
                 }
-                const occupiedCoordinates = [{ x, y }];
-                while (isDigit(this.matrix[y][x + 1])) {
-                    partNumberCandidate += this.matrix[y][x + 1];
-                    occupiedCoordinates.push({ x: x + 1, y });
-                    x++;
-                }
-                if (isAdjacentToSymbol(this.matrix, occupiedCoordinates)) {
-                    sum += parseInt(partNumberCandidate, 10);
-                }
+                const adjacentPartNumbers = this.getAdjacentPartNumbers(x, y);
+                adjacentPartNumbers.forEach(
+                    (partNumber) => (sum += partNumber)
+                );
             }
         }
 
@@ -35,7 +27,70 @@ export default class Solver23D3 implements PuzzleSolver {
     }
 
     solvePart2() {
-        return -1;
+        let sum = 0;
+        for (let y = 0; y < this.matrix.length; y++) {
+            for (let x = 0; x < this.matrix[y].length; x++) {
+                if (!isGear(this.matrix[y][x])) {
+                    continue;
+                }
+                const adjacentPartNumbers = this.getAdjacentPartNumbers(x, y);
+                if (adjacentPartNumbers.length !== 2) {
+                    continue;
+                }
+                sum += adjacentPartNumbers[0] * adjacentPartNumbers[1];
+            }
+        }
+
+        return sum;
+    }
+
+    private getAdjacentPartNumbers(x: number, y: number) {
+        const result = [
+            ...this.getNumbersWestAndEastOf(x, y),
+            ...this.getNumbersWestAndEastOf(x, y - 1),
+            ...this.getNumbersWestAndEastOf(x, y + 1),
+        ];
+        return result
+            .filter((partNumber) => partNumber.length > 0)
+            .map((partNumber) => parseInt(partNumber, 10));
+    }
+
+    private getNumbersWestAndEastOf(x: number, y: number) {
+        const SEPARATOR = "|";
+        const west = this.getNumberWestOf(x, y) || SEPARATOR;
+        const center = this.getNumberAt(x, y) || SEPARATOR;
+        const east = this.getNumberEastOf(x, y) || SEPARATOR;
+        return (west + center + east).split(SEPARATOR);
+    }
+
+    private getNumberWestOf(x: number, y: number) {
+        let result = "";
+        while (isDigit(this.matrixAt(x - 1, y))) {
+            result = this.matrixAt(x - 1, y) + result;
+            x--;
+        }
+        return result;
+    }
+
+    private getNumberEastOf(x: number, y: number) {
+        let result = "";
+        while (isDigit(this.matrixAt(x + 1, y))) {
+            result += this.matrixAt(x + 1, y);
+            x++;
+        }
+        return result;
+    }
+
+    private getNumberAt(x: number, y: number) {
+        const char = this.matrixAt(x, y);
+        return isDigit(char) ? char : "";
+    }
+
+    private matrixAt(x: number, y: number) {
+        if (x < 0 || y < 0) {
+            return "";
+        }
+        return this.matrix[y]?.[x] ?? "";
     }
 }
 
@@ -50,19 +105,6 @@ function isSymbol(char: string): boolean {
     return typeof char === "string" && char !== "." && !isDigit(char);
 }
 
-function isAdjacentToSymbol(
-    matrix: string[][],
-    coordinates: Coordinate[]
-): boolean {
-    return coordinates.some(
-        ({ x, y }) =>
-            isSymbol(matrix[y]?.[x + 1]) || // E
-            isSymbol(matrix[y + 1]?.[x + 1]) || // SE
-            isSymbol(matrix[y + 1]?.[x]) || // S
-            isSymbol(matrix[y + 1]?.[x - 1]) || // SW
-            isSymbol(matrix[y]?.[x - 1]) || // W
-            isSymbol(matrix[y - 1]?.[x - 1]) || // NW
-            isSymbol(matrix[y - 1]?.[x]) || // N
-            isSymbol(matrix[y - 1]?.[x + 1]) // NE
-    );
+function isGear(char: string): boolean {
+    return char === "*";
 }
