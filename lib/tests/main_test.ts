@@ -6,7 +6,7 @@ import { LINE_SEPARATOR } from "../common.ts";
 const ANSWERS: { [id: string]: (string | number)[] } = {
     "23D1": [54644, 53348],
     "23D2": [2176, 63700],
-    "23D3": [536576, -1],
+    "23D3": [536576, 75741499],
     "24D1": [2344935, 27647262],
     "24D2": [421, 476],
     "24D3": [157621318, 79845780],
@@ -20,14 +20,12 @@ for (const id of solverIds) {
             path.join("lib", id, "input.txt")
         );
         assertExists(input, `No input`);
-
-        for (const part of ["1", "2"]) {
-            const solver = SolverFactory.getSolver(id);
-            solver.parseInput(input.split(LINE_SEPARATOR));
-
+        const solver = SolverFactory.getSolver(id);
+        solver.parseInput(input.split(LINE_SEPARATOR));
+        for (const part of [1, 2]) {
             const output =
-                part === "1" ? solver.solvePart1() : solver.solvePart2();
-            const expected = ANSWERS[id][Number(part) - 1];
+                part === 1 ? solver.solvePart1() : solver.solvePart2();
+            const expected = ANSWERS[id][part - 1];
             assertEquals(output, expected, `Incorrect output`);
         }
     });
