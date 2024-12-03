@@ -8,7 +8,9 @@
 
 1. `git clone` this repository
 2. `cd` into the repository
-3. `deno install` to install the dependencies
+3. `deno install -e main.ts` to install the dependencies
+
+Note❗ To start from scratch without my solutions, delete everything inside the `lib` directory except for the `commands` and `types` directories and the `common.ts` file.
 
 ## Usage
 
@@ -18,7 +20,7 @@ Solve the puzzle for the given year, day and part:
 deno main.ts solve [-d, --day <day>] [-p, --part <1 | 2>] [-y, --year <year>]
 ```
 
-Initialize the puzzle for the given year and day into the `lib` directory:
+Initialize and scaffold a new puzzle directory into the `lib` directory:
 
 ```
 deno main.ts init [-d, --day <day>] [-y, --year <year>]
@@ -26,10 +28,12 @@ deno main.ts init [-d, --day <day>] [-y, --year <year>]
 
 _Defaults:_
 
--   `day` defaults to the latest puzzle
--   `year` defaults to the latest puzzle
+-   `day` defaults to the day of the latest puzzle
+-   `year` defaults to the year of the latest AoC
 -   `part` defaults to 1
+
+Note❗ To use the `init` command to automatically fetch the puzzle input and problem description, you will need to set the `AOC_SESSION` environment variable to your Advent of Code session cookie. You can achieve this by creating a `.env` file with `AOC_SESSION=<session cookie>` in the root of your project. This same variable is also used to submit answers after solving a puzzle.
 
 ## Testing
 
-`deno test` will run the tests
+`deno test` will run all the solvers and test their output
