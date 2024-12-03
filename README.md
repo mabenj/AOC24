@@ -12,9 +12,9 @@
 
 ## Usage
 
-`deno main.ts solve [-d <day>] [-p <1 | 2>] [-y <year>]` will solve the puzzle for the given year, day and part.
+`deno main.ts solve [-d, --day <day>] [-p, --part <1 | 2>] [-y, --year <year>]` will solve the puzzle for the given year, day and part.
 
-`deno main.ts init [-d <day>] [-y <year>]` will initialize the puzzle for the given year and day into the `lib` directory.
+`deno main.ts init [-d, --day <day>] [-y, --year <year>]` will initialize the puzzle for the given year and day into the `lib` directory.
 
 **Defaults:**
 

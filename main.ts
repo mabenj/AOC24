@@ -2,6 +2,7 @@ import { parseArgs } from "jsr:@std/cli/parse-args";
 import solve from "./lib/commands/solve.ts";
 import init from "./lib/commands/init.ts";
 import "jsr:@std/dotenv/load";
+import { determineLatestPuzzle } from "./lib/common.ts";
 
 const flags = parseArgs(Deno.args, {
     string: ["d", "day", "p", "part", "y", "year"],
@@ -9,21 +10,19 @@ const flags = parseArgs(Deno.args, {
 
 async function main() {
     const verb = flags._[0]?.toString()?.toLowerCase();
-    const day = flags.d || flags.day || getDefaultDay();
+    const day = flags.d || flags.day || determineLatestPuzzle().day;
     const part = flags.p || flags.part || "1";
-    const year = flags.y || flags.year || getDefaultYear();
+    const year = flags.y || flags.year || determineLatestPuzzle().year;
+
+    if ((part !== "1" && part !== "2") || +day < 1 || +day > 25) {
+        return printUsage();
+    }
 
     switch (verb) {
         case "solve":
-            if (!day || !["1", "2"].includes(part)) {
-                return printUsage();
-            }
             return await solve(year, day, part);
         case "init":
-            if (!day) {
-                return printUsage();
-            }
-            return init(year, day);
+            return await init(year, day);
         default:
             return printUsage();
     }
@@ -31,19 +30,10 @@ async function main() {
 
 function printUsage() {
     console.log("Usage:");
-    console.log("    main.ts solve [-d <day>] [-p <1 | 2>] [-y <year>]");
-    console.log("    main.ts init [-d <day>] [-y <year>]");
-}
-
-function getDefaultDay() {
-    const date = new Date();
-    const day = date.getDate();
-    return Math.min(day, 25).toString();
-}
-
-function getDefaultYear() {
-    const date = new Date();
-    return date.getFullYear().toString().slice(-2);
+    console.log(
+        "    main.ts solve [-d, --day <day>] [-p, --part <1 | 2>] [-y, --year <year>]"
+    );
+    console.log("    main.ts init [-d, --day <day>] [-y, --year <year>]");
 }
 
 if (import.meta.main) {

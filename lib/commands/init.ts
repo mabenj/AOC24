@@ -4,52 +4,48 @@ import { DOMParser } from "jsr:@b-fuze/deno-dom";
 import { NodeHtmlMarkdown } from "npm:node-html-markdown";
 
 export default async function init(year: string, day: string) {
-    const startTime = performance.now();
     const id = `${year}D${day}`;
-    const existingSolvers = await getExistingSolverIds();
+    console.log(`Initializing %c${id}`, "color: blue");
 
-    const puzzle = await fetchPuzzle(year, day);
-    const input = await fetchInput(year, day);
-    const solverClass = generateSolverClass(id);
-    const solverFactoryClass = await generateSolverFactoryClass([
-        ...existingSolvers,
-        id,
-    ]);
-
+    const startTime = performance.now();
     const directoryPath = path.join("lib", id);
-    const inputPath = path.join(directoryPath, "input.txt");
-    const puzzlePath = path.join(directoryPath, "README.md");
-    const solverPath = path.join(directoryPath, "solver.ts");
-    const factoryPath = path.join("lib", "solver-factory.ts");
-
-    console.log(`Creating directory %c${directoryPath}`, "color: gray");
     await Deno.mkdir(directoryPath, { recursive: true });
-    await writeFileIfNotExists(inputPath, input);
-    await writeFileOverwrite(puzzlePath, puzzle);
-    await writeFileIfNotExists(solverPath, solverClass);
-    await writeFileOverwrite(factoryPath, solverFactoryClass);
-
+    await initializePuzzle(year, day, directoryPath);
+    await initializeInput(year, day, directoryPath);
+    await initializeSolver(year, day, directoryPath);
+    await initializeSolverFactory();
     const endTime = performance.now();
 
     console.log(
-        `${id} initialized successfully %c(${prettyNumber(
+        `%c${id}%c initialized successfully %c(${prettyNumber(
             endTime - startTime
         )}ms)`,
+        "color: blue",
+        "color: white",
         "color: gray"
     );
 }
 
-async function fetchPuzzle(year: string, day: string) {
-    const puzzleUrl = `https://adventofcode.com/20${year}/day/${day}`;
-
+function getSessionToken() {
     const sessionToken = Deno.env.get("AOC_SESSION");
     if (!sessionToken) {
         throw new Error("Missing 'AOC_SESSION' environment variable");
     }
+    return sessionToken;
+}
 
-    console.log(`Fetching puzzle from %c${puzzleUrl}`, "color: gray");
+async function initializePuzzle(year: string, day: string, dir: string) {
+    const puzzleUrl = `https://adventofcode.com/20${year}/day/${day}`;
+    const puzzlePath = path.join(dir, "README.md");
+
+    console.log(
+        `Fetching puzzle from %c${puzzleUrl}%c into %c${puzzlePath}`,
+        "color: gray",
+        "color: white",
+        "color: gray"
+    );
     const res = await fetch(puzzleUrl, {
-        headers: { cookie: `session=${Deno.env.get("AOC_SESSION")}` },
+        headers: { cookie: `session=${getSessionToken()}` },
     });
     if (!res.ok) {
         throw new Error(
@@ -63,20 +59,31 @@ async function fetchPuzzle(year: string, day: string) {
         .join("\n");
     const nhm = new NodeHtmlMarkdown();
     const markdown = nhm.translate(puzzle);
-    return markdown;
+
+    await Deno.writeTextFile(puzzlePath, markdown);
 }
 
-async function fetchInput(year: string, day: string) {
+async function initializeInput(year: string, day: string, dir: string) {
     const inputUrl = `https://adventofcode.com/20${year}/day/${day}/input`;
+    const inputPath = path.join(dir, "input.txt");
 
-    const sessionToken = Deno.env.get("AOC_SESSION");
-    if (!sessionToken) {
-        throw new Error("Missing 'AOC_SESSION' environment variable");
+    if (await fileExists(inputPath)) {
+        console.log(
+            `Input already exists at %c${inputPath}%c - skipping...`,
+            "color: gray",
+            "color: white"
+        );
+        return;
     }
 
-    console.log(`Fetching input from %c${inputUrl}`, "color: gray");
+    console.log(
+        `Fetching input from %c${inputUrl}%c into %c${inputPath}`,
+        "color: gray",
+        "color: white",
+        "color: gray"
+    );
     const res = await fetch(inputUrl, {
-        headers: { cookie: `session=${Deno.env.get("AOC_SESSION")}` },
+        headers: { cookie: `session=${getSessionToken()}` },
     });
     if (!res.ok) {
         throw new Error(
@@ -84,25 +91,37 @@ async function fetchInput(year: string, day: string) {
         );
     }
     const input = await res.text();
-    return input;
+    await Deno.writeTextFile(inputPath, input);
 }
 
-async function writeFileOverwrite(path: string, content: string) {
-    console.log(`Writing file to %c${path}`, "color: gray");
-    await Deno.writeTextFile(path, content);
-}
+async function initializeSolver(year: string, day: string, dir: string) {
+    const id = `${year}D${day}`;
+    const solverPath = path.join(dir, "solver.ts");
 
-async function writeFileIfNotExists(path: string, content: string) {
-    if (await fileExists(path)) {
+    if (await fileExists(solverPath)) {
         console.log(
-            `File %c${path}%c already exists! Skipping...`,
+            `Solver already exists at %c${solverPath}%c - skipping...`,
             "color: gray",
             "color: white"
         );
         return;
     }
 
-    await writeFileOverwrite(path, content);
+    console.log(`Generating solver into %c${solverPath}`, "color: gray");
+    const solverClass = generateSolverClass(id);
+    await Deno.writeTextFile(solverPath, solverClass);
+}
+
+async function initializeSolverFactory() {
+    const existingSolvers = await getExistingSolverIds();
+    const solverFactoryPath = path.join("lib", "solver-factory.ts");
+
+    console.log(
+        `Generating solver factory into %c${solverFactoryPath}`,
+        "color: gray"
+    );
+    const solverFactoryClass = generateSolverFactoryClass(existingSolvers);
+    await Deno.writeTextFile(solverFactoryPath, solverFactoryClass);
 }
 
 async function fileExists(path: string) {
