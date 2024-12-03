@@ -12,14 +12,24 @@
 
 ## Usage
 
-`deno main.ts solve [-d, --day <day>] [-p, --part <1 | 2>] [-y, --year <year>]` will solve the puzzle for the given year, day and part.
+Solve the puzzle for the given year, day and part:
 
-`deno main.ts init [-d, --day <day>] [-y, --year <year>]` will initialize the puzzle for the given year and day into the `lib` directory.
+```
+deno main.ts solve [-d, --day <day>] [-p, --part <1 | 2>] [-y, --year <year>]
+```
 
-**Defaults:**
+Initialize the puzzle for the given year and day into the `lib` directory:
 
--   `day` defaults to the current day or 25 if the current day is after the 25th.
--   `year` defaults to the current year.
--   `part` defaults to 1.
+```
+deno main.ts init [-d, --day <day>] [-y, --year <year>]
+```
 
-`deno test` will run the tests.
+_Defaults:_
+
+-   `day` defaults to the latest puzzle
+-   `year` defaults to the latest puzzle
+-   `part` defaults to 1
+
+## Testing
+
+`deno test` will run the tests
