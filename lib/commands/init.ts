@@ -34,7 +34,7 @@ function getSessionToken() {
     return sessionToken;
 }
 
-async function initializePuzzle(year: string, day: string, dir: string) {
+export async function initializePuzzle(year: string, day: string, dir: string) {
     const puzzleUrl = `https://adventofcode.com/20${year}/day/${day}`;
     const puzzlePath = path.join(dir, "README.md");
 

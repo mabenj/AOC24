@@ -2,9 +2,11 @@ import { LINE_SEPARATOR, prettyNumber } from "../common.ts";
 import SolverFactory from "../solver-factory.ts";
 import * as path from "jsr:@std/path";
 import { DOMParser } from "jsr:@b-fuze/deno-dom";
+import { initializePuzzle } from "./init.ts";
 
 export default async function solve(year: string, day: string, part: string) {
     const puzzleId = `${year}D${day}`;
+    const puzzleDir = path.join("lib", puzzleId);
     try {
         const solver = SolverFactory.getSolver(puzzleId);
         const solveMethod =
@@ -13,7 +15,7 @@ export default async function solve(year: string, day: string, part: string) {
                 : () => solver.solvePart2();
 
         const input = await Deno.readTextFile(
-            path.join("lib", puzzleId, "input.txt")
+            path.join(puzzleDir, "input.txt")
         );
         if (!input) {
             throw new Error(`No input found for ${puzzleId}`);
@@ -32,9 +34,15 @@ export default async function solve(year: string, day: string, part: string) {
             "color: gray"
         );
 
-        const shouldSubmit = confirm("Do you want to submit this answer?");
-        if (shouldSubmit) {
-            await submitAnswer(output, year, day, part);
+        if (confirm("Do you want to submit this answer?")) {
+            const isCorrect = await submitAnswer(output, year, day, part);
+            if (
+                isCorrect &&
+                part === "1" &&
+                confirm("Do you want to fetch part 2?")
+            ) {
+                await initializePuzzle(year, day, puzzleDir);
+            }
         }
     } catch (e) {
         console.error(
@@ -81,6 +89,7 @@ async function submitAnswer(
         doc.querySelector("p")?.textContent?.trim().toLowerCase() || "";
     if (result.startsWith("that's the right answer")) {
         console.log(`Answer is correct! %c(${answer})`, "color: green");
+        return true;
     } else if (result.startsWith("that's not the right answer")) {
         if (result.includes("answer is too low")) {
             console.log(`Answer is too low! %c(${answer})`, "color: red");
@@ -89,17 +98,20 @@ async function submitAnswer(
         } else {
             console.log(`Answer is incorrect! %c(${answer})`, "color: red");
         }
+        return false;
     } else if (result.startsWith("you gave an answer too recently")) {
         console.log(
             `You gave an answer too recently! %c(${answer})`,
             "color: yellow"
         );
+        return false;
     } else if (
         result.startsWith("you don't seem to be solving the right level")
     ) {
         console.log(
             "You don't seem to be solving the right level. Did you already complete it?"
         );
+        return false;
     } else {
         throw new Error("Unexpected response when submitting answer");
     }
