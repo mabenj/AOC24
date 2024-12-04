@@ -1,4 +1,4 @@
-import { objectKeys } from "../common.ts";
+import { objectKeys, reverseString } from "../common.ts";
 import { PuzzleSolver } from "../types/puzzle-solver.ts";
 
 export default class Solver24D4 implements PuzzleSolver {
@@ -17,8 +17,62 @@ export default class Solver24D4 implements PuzzleSolver {
         return sum;
     }
 
-    solvePart2(): number | string {
-        throw new Error("Not implemented");
+    solvePart2() {
+        const WORD = "MAS";
+        let sum = 0;
+        this.traverseMatrix((x, y) => {
+            const isCrossed = this.isWordCrossedAt(x, y, WORD);
+            if (isCrossed) sum++;
+        });
+        return sum;
+    }
+
+    private isWordCrossedAt(x: number, y: number, word: string): boolean {
+        if (word.length % 2 === 0) {
+            return false;
+        }
+        const middleIndex = Math.floor(word.length / 2);
+        const middleChar = word[middleIndex];
+        if (this.matrixAt(x, y) !== middleChar) {
+            return false;
+        }
+
+        const DIRECTIONS = {
+            northeast: [1, -1],
+            southeast: [1, 1],
+            southwest: [-1, 1],
+            northwest: [-1, -1],
+        };
+
+        const getStringInDirection = (
+            direction: keyof typeof DIRECTIONS,
+            length: number
+        ) => {
+            const [dx, dy] = DIRECTIONS[direction];
+            let str = "";
+            for (let i = 1; i <= length; i++) {
+                str += this.matrixAt(x + dx * i, y + dy * i);
+            }
+            return str;
+        };
+
+        const nwToSe =
+            getStringInDirection("northwest", middleIndex) +
+            middleChar +
+            getStringInDirection("southeast", middleIndex);
+        if (nwToSe !== word && reverseString(nwToSe) !== word) {
+            return false;
+        }
+
+        const neToSw =
+            getStringInDirection("northeast", middleIndex) +
+            middleChar +
+            getStringInDirection("southwest", middleIndex);
+        if (neToSw !== word && reverseString(neToSw) !== word) {
+            return false;
+        }
+
+        return true;
     }
 
     private getNumberOfWordsAt(x: number, y: number, word: string): number {

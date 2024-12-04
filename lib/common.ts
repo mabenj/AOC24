@@ -51,3 +51,7 @@ export function determineLatestPuzzle(): { year: string; day: string } {
 export function objectKeys<T extends object>(obj: T): (keyof T)[] {
     return Object.keys(obj) as (keyof T)[];
 }
+
+export function reverseString(str: string) {
+    return str.split("").reverse().join("");
+}
