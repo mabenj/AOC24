@@ -7,7 +7,7 @@ export function prettyNumber(number: number | undefined) {
     return NUMBER_FORMATTER.format(number);
 }
 
-export const LINE_SEPARATOR = "\r\n";
+export const LINE_SEPARATOR = "\n";
 
 export function determineLatestPuzzle(): { year: string; day: string } {
     const now = new Date();
@@ -46,4 +46,8 @@ export function determineLatestPuzzle(): { year: string; day: string } {
         end.setDate(25);
         return end;
     }
+}
+
+export function objectKeys<T extends object>(obj: T): (keyof T)[] {
+    return Object.keys(obj) as (keyof T)[];
 }

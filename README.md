@@ -1,4 +1,4 @@
-# Advent of Code in Deno/TypeScript
+# 🎄 Advent of Code in Deno/TypeScript
 
 ## Prerequisites
 
@@ -11,6 +11,26 @@
 3. `deno install -e main.ts` to install the dependencies
 
 ❗ Note: to start from scratch without my solutions, delete everything inside the `lib` directory except for the `commands` and `types` directories and the `common.ts` file.
+
+## Structure
+
+```
+.
+├── lib/
+│   ├── yyDd/             # Daily puzzle directory (e.g. 24D1, 24D2, etc.)
+│   │   ├── input.txt     # Input file
+│   │   ├── README.md     # Problem description
+│   │   └── solver.ts     # Solution code
+│   ├── commands/
+│   │   ├── init.ts       # Command to scaffold a new puzzle
+│   │   └── solve.ts      # Command to solve a puzzle
+│   ├── tests/
+│   ├── types/
+│   ├── common.ts         # Common utility functions
+│   └── solver-factory.ts
+├── main.ts               # Program entry point
+└── deno.json             # Deno config
+```
 
 ## Usage
 
