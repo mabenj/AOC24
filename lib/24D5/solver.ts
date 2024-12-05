@@ -86,7 +86,7 @@ export default class Solver24D5 implements PuzzleSolver {
             } else {
                 i++;
             }
-        } while (!this.isCorrectOrdering(update));
+        } while (i < update.length);
 
         return update;
     }
