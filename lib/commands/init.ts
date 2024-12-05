@@ -1,7 +1,7 @@
 import * as path from "jsr:@std/path";
-import { prettyNumber } from "../common.ts";
 import { DOMParser } from "jsr:@b-fuze/deno-dom";
 import { NodeHtmlMarkdown } from "npm:node-html-markdown";
+import { prettyDuration } from "../common.ts";
 
 export default async function init(year: string, day: string) {
     const id = `${year}D${day}`;
@@ -17,9 +17,9 @@ export default async function init(year: string, day: string) {
     const endTime = performance.now();
 
     console.log(
-        `%c${id}%c initialized successfully %c(${prettyNumber(
+        `%c${id}%c initialized successfully %c(${prettyDuration(
             endTime - startTime
-        )}ms)`,
+        )})`,
         "color: blue",
         "color: white",
         "color: gray"

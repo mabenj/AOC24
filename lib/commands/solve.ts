@@ -1,4 +1,4 @@
-import { LINE_SEPARATOR, prettyNumber } from "../common.ts";
+import { LINE_SEPARATOR, prettyDuration } from "../common.ts";
 import SolverFactory from "../solver-factory.ts";
 import * as path from "jsr:@std/path";
 import { DOMParser } from "jsr:@b-fuze/deno-dom";
@@ -27,9 +27,9 @@ export default async function solve(year: string, day: string, part: string) {
         const endTime = performance.now();
 
         console.log(
-            `Solved ${puzzleId} part ${part}: %c${output} %c(${prettyNumber(
+            `Solved ${puzzleId} part ${part}: %c${output} %c(${prettyDuration(
                 endTime - startTime
-            )}ms)`,
+            )})`,
             "color: green",
             "color: gray"
         );
