@@ -1,1 +1,4 @@
 *.env
+/lib/*/input.txt
+/lib/*/puzzle.md
+/.aoc-cache

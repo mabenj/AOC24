@@ -11,6 +11,7 @@ export default async function init(year: string, day: string) {
     const directoryPath = path.join("lib", id);
     await Deno.mkdir(directoryPath, { recursive: true });
     await initializePuzzle(year, day, directoryPath);
+    await initializeReadme(year, day, directoryPath);
     await initializeInput(year, day, directoryPath);
     await initializeSolver(year, day, directoryPath);
     await initializeSolverFactory();
@@ -34,9 +35,29 @@ function getSessionToken() {
     return sessionToken;
 }
 
+export async function initializeReadme(year: string, day: string, dir: string) {
+    const link = `https://adventofcode.com/20${year}/day/${day}`;
+    const readmePath = path.join(dir, "README.md");
+    await Deno.writeTextFile(
+        readmePath,
+        `# Advent of Code 20${year} Day ${day}\n\n[${link}](${link})`
+    );
+}
+
 export async function initializePuzzle(year: string, day: string, dir: string) {
     const puzzleUrl = `https://adventofcode.com/20${year}/day/${day}`;
-    const puzzlePath = path.join(dir, "README.md");
+    const puzzlePath = path.join(dir, "puzzle.md");
+    const cacheKey = `${year}D${day}-puzzle`;
+
+    const cachedPuzzle = await getPathToCacheIfExists(cacheKey);
+    if (cachedPuzzle) {
+        console.log(
+            `Using cached puzzle from %c${cachedPuzzle}`,
+            "color: gray"
+        );
+        await Deno.copyFile(cachedPuzzle, puzzlePath);
+        return;
+    }
 
     console.log(
         `Fetching puzzle from %c${puzzleUrl}%c into %c${puzzlePath}`,
@@ -61,11 +82,13 @@ export async function initializePuzzle(year: string, day: string, dir: string) {
     const markdown = nhm.translate(puzzle);
 
     await Deno.writeTextFile(puzzlePath, markdown);
+    await copyToCache(cacheKey, puzzlePath);
 }
 
 async function initializeInput(year: string, day: string, dir: string) {
     const inputUrl = `https://adventofcode.com/20${year}/day/${day}/input`;
     const inputPath = path.join(dir, "input.txt");
+    const cacheKey = `${year}D${day}-input`;
 
     if (await fileExists(inputPath)) {
         console.log(
@@ -73,6 +96,13 @@ async function initializeInput(year: string, day: string, dir: string) {
             "color: gray",
             "color: white"
         );
+        return;
+    }
+
+    const cachedPuzzle = await getPathToCacheIfExists(cacheKey);
+    if (cachedPuzzle) {
+        console.log(`Using cached input from %c${cachedPuzzle}`, "color: gray");
+        await Deno.copyFile(cachedPuzzle, inputPath);
         return;
     }
 
@@ -92,6 +122,7 @@ async function initializeInput(year: string, day: string, dir: string) {
     }
     const input = await res.text();
     await Deno.writeTextFile(inputPath, input);
+    await copyToCache(cacheKey, inputPath);
 }
 
 async function initializeSolver(year: string, day: string, dir: string) {
@@ -148,6 +179,20 @@ async function getExistingSolverIds() {
         }
     }
     return result;
+}
+
+async function getPathToCacheIfExists(key: string) {
+    const cachePath = path.join(".aoc-cache", "v1", key);
+    if (await fileExists(cachePath)) {
+        return cachePath;
+    }
+    return null;
+}
+
+async function copyToCache(key: string, filepath: string) {
+    const cachePath = path.join(".aoc-cache", "v1", key);
+    await Deno.mkdir(path.dirname(cachePath), { recursive: true });
+    await Deno.copyFile(filepath, cachePath);
 }
 
 function generateSolverClass(id: string) {
