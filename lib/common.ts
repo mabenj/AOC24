@@ -52,3 +52,15 @@ export function objectKeys<T extends object>(obj: T): (keyof T)[] {
 export function reverseString(str: string) {
     return str.split("").reverse().join("");
 }
+
+export async function fileExists(path: string) {
+    try {
+        await Deno.lstat(path);
+        return true;
+    } catch (err) {
+        if (!(err instanceof Deno.errors.NotFound)) {
+            throw err;
+        }
+        return false;
+    }
+}

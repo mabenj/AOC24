@@ -12,26 +12,6 @@
 
 ❗ Note: to start from scratch without my solutions, delete everything inside the `lib` directory except for the `commands` and `types` directories and the `common.ts` file.
 
-## Structure
-
-```
-.
-├── lib/
-│   ├── yyDd/             # Daily puzzle directory (e.g. 24D1, 24D2, etc.)
-│   │   ├── input.txt     # Input file
-│   │   ├── README.md     # Problem description
-│   │   └── solver.ts     # Solution code
-│   ├── commands/
-│   │   ├── init.ts       # Command to scaffold a new puzzle
-│   │   └── solve.ts      # Command to solve a puzzle
-│   ├── tests/
-│   ├── types/
-│   ├── common.ts         # Common utility functions
-│   └── solver-factory.ts
-├── main.ts               # Program entry point
-└── deno.json             # Deno config
-```
-
 ## Usage
 
 Solve the puzzle for the given year, day and part:
@@ -52,8 +32,10 @@ _Defaults:_
 -   `year` defaults to the year of the latest AoC
 -   `part` defaults to 1
 
-❗ Note: to use the `init` command to automatically fetch the puzzle input and problem description, you will need to set the `AOC_SESSION` environment variable to your Advent of Code session cookie. You can achieve this by creating a `.env` file with `AOC_SESSION=<session cookie>` in the root of your project. This same variable is also used to submit answers after solving a puzzle.
+❗ Note: to use the `init` command to automatically scaffold a new puzzle directory and to fetch your input and problem description, you will need to set the `AOC_SESSION` environment variable to your Advent of Code session cookie. You can achieve this by creating a `.env` file with `AOC_SESSION=<session cookie>` in the root of your project (see .env.example). This same variable is also used to submit answers after solving a puzzle.
 
 ## Testing
 
 `deno test` will run all the solvers and test their output
+
+❗ Note: the tests expect a file `main_test_answers.json` in the `lib/tests` directory with the correct answers for each puzzle. You can use the `main_test_answers.example.json` file as a template to create your own file.

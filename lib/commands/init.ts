@@ -1,7 +1,7 @@
 import * as path from "jsr:@std/path";
 import { DOMParser } from "jsr:@b-fuze/deno-dom";
 import { NodeHtmlMarkdown } from "npm:node-html-markdown";
-import { prettyDuration } from "../common.ts";
+import { prettyDuration, fileExists } from "../common.ts";
 
 export default async function init(year: string, day: string) {
     const id = `${year}D${day}`;
@@ -153,18 +153,6 @@ async function initializeSolverFactory() {
     );
     const solverFactoryClass = generateSolverFactoryClass(existingSolvers);
     await Deno.writeTextFile(solverFactoryPath, solverFactoryClass);
-}
-
-async function fileExists(path: string) {
-    try {
-        await Deno.lstat(path);
-        return true;
-    } catch (err) {
-        if (!(err instanceof Deno.errors.NotFound)) {
-            throw err;
-        }
-        return false;
-    }
 }
 
 async function getExistingSolverIds() {
