@@ -64,31 +64,16 @@ export default class Solver24D5 implements PuzzleSolver {
     }
 
     private fixOrdering(update: number[]): number[] {
-        let i = 0;
-        while (i < update.length) {
-            const current = update[i];
-            const rule = this.rules.get(current);
-            if (!rule) {
-                i++;
-                continue;
+        return update.sort((a, b) => {
+            const rulesA = this.rules.get(a);
+            if (rulesA?.numbersAfter.has(b)) {
+                return -1;
             }
-
-            const before = update.slice(0, i);
-            const after = update.slice(i + 1);
-            const violation =
-                before.find((num) => rule.numbersAfter.has(num)) ??
-                after.find((num) => rule.numbersBefore.has(num));
-            if (violation) {
-                const violationIdx = update.indexOf(violation);
-                update[violationIdx] = update[i];
-                update[i] = violation;
-                i = 0;
-            } else {
-                i++;
+            if (rulesA?.numbersBefore.has(b)) {
+                return 1;
             }
-        }
-
-        return update;
+            return 0;
+        });
     }
 
     private isCorrectOrdering(update: number[]): boolean {
