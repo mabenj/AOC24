@@ -65,7 +65,7 @@ export default class Solver24D5 implements PuzzleSolver {
 
     private fixOrdering(update: number[]): number[] {
         let i = 0;
-        do {
+        while (i < update.length) {
             const current = update[i];
             const rule = this.rules.get(current);
             if (!rule) {
@@ -86,7 +86,7 @@ export default class Solver24D5 implements PuzzleSolver {
             } else {
                 i++;
             }
-        } while (i < update.length);
+        }
 
         return update;
     }
