@@ -1,12 +1,14 @@
 import { PuzzleSolver } from "../types/puzzle-solver.ts";
 
 type ScratchCard = {
+    id: number;
     winningNumbers: number[];
     numbers: number[];
 };
 
 export default class Solver23D4 implements PuzzleSolver {
     private cards: ScratchCard[] = [];
+    private winCountCache = new Map<number, number>();
 
     parseInput(input: string[]) {
         this.cards = input
@@ -14,9 +16,10 @@ export default class Solver23D4 implements PuzzleSolver {
             .map((line) => {
                 const { groups } =
                     line.match(
-                        /Card\s+\d+: (?<winningNumbers>[\d\s]+)\| (?<numbers>[\d\s]+)/
+                        /Card (?<id>[\s\d]+): (?<winningNumbers>[\d\s]+)\| (?<numbers>[\d\s]+)/
                     ) ?? {};
                 return {
+                    id: Number(groups?.id.trim()),
                     winningNumbers:
                         groups?.winningNumbers
                             .split(" ")
@@ -68,11 +71,16 @@ export default class Solver23D4 implements PuzzleSolver {
     }
 
     public getWinCount(card: ScratchCard): number {
-        return card.numbers.reduce((acc, number) => {
+        if (this.winCountCache.has(card.id)) {
+            return this.winCountCache.get(card.id) ?? 0;
+        }
+        const winCount = card.numbers.reduce((acc, number) => {
             if (card.winningNumbers.includes(number)) {
                 acc++;
             }
             return acc;
         }, 0);
+        this.winCountCache.set(card.id, winCount);
+        return winCount;
     }
 }
