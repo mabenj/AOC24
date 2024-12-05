@@ -12,6 +12,7 @@ const ANSWERS: { [id: string]: (string | number)[] } = {
     "24D2": [421, 476],
     "24D3": [157621318, 79845780],
     "24D4": [2560, 1910],
+    "24D5": [5248, 4507],
 };
 
 const solverIds = SolverFactory.getSolverIds();
