@@ -41,7 +41,7 @@ export default async function solve(year: string, day: string, part: string) {
                 part === "1" &&
                 confirm("Do you want to fetch part 2?")
             ) {
-                await initializePuzzle(year, day, puzzleDir);
+                await initializePuzzle(year, day, puzzleDir, "2");
             }
         }
     } catch (e) {

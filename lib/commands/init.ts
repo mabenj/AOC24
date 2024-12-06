@@ -44,10 +44,15 @@ export async function initializeReadme(year: string, day: string, dir: string) {
     );
 }
 
-export async function initializePuzzle(year: string, day: string, dir: string) {
+export async function initializePuzzle(
+    year: string,
+    day: string,
+    dir: string,
+    part = "1"
+) {
     const puzzleUrl = `https://adventofcode.com/20${year}/day/${day}`;
     const puzzlePath = path.join(dir, "puzzle.md");
-    const cacheKey = `${year}D${day}-puzzle`;
+    const cacheKey = `${year}D${day}-puzzle-part${part}`;
 
     const cachedPuzzle = await getPathToCacheIfExists(cacheKey);
     if (cachedPuzzle) {
