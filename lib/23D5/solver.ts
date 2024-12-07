@@ -1,137 +1,147 @@
-import { LINE_SEPARATOR } from "../common.ts";
 import { PuzzleSolver } from "../types/puzzle-solver.ts";
 
-const EXAMPLE = `seeds: 79 14 55 13
-
-seed-to-soil map:
-50 98 2
-52 50 48
-
-soil-to-fertilizer map:
-0 15 37
-37 52 2
-39 0 15
-
-fertilizer-to-water map:
-49 53 8
-0 11 42
-42 0 7
-57 7 4
-
-water-to-light map:
-88 18 7
-18 25 70
-
-light-to-temperature map:
-45 77 23
-81 45 19
-68 64 13
-
-temperature-to-humidity map:
-0 69 1
-1 0 69
-
-humidity-to-location map:
-60 56 37
-56 93 4`;
-
-type Category =
-    | "seed"
-    | "soil"
-    | "fertilizer"
-    | "water"
-    | "light"
-    | "temperature"
-    | "humidity"
-    | "location";
-
 type CategoryMap = {
-    source: Category;
-    destination: Category;
+    label: string;
+    prevMap: CategoryMap | null;
+    nextMap: CategoryMap | null;
     ranges: {
-        sourceStart: number;
-        sourceEnd: number;
-        offset: number;
+        prevMapStart: number;
+        nextMapStart: number;
+        length: number;
     }[];
 };
 
 export default class Solver23D5 implements PuzzleSolver {
     private seeds: number[] = [];
+    private seedRanges: { start: number; end: number }[] = [];
     private maps: CategoryMap[] = [];
 
     parseInput(input: string[]) {
-        // input = EXAMPLE.split(LINE_SEPARATOR);
         this.seeds = input[0]
             .split(" ")
             .filter((n) => n.match(/\d+/))
             .map(Number);
-
-        let currentMap: CategoryMap = {
-            source: "seed",
-            destination: "soil",
-            ranges: [],
-        };
-        for (let i = 2; i < input.length; i++) {
-            if (input[i] === "" || i === input.length - 1) {
-                // Category ended
-                this.maps.push(currentMap);
-                currentMap = {
-                    source: "seed",
-                    destination: "soil",
-                    ranges: [],
-                };
-                continue;
-            }
-
-            const headerMatch = input[i].match(
-                /(?<source>.+)-to-(?<destination>.+) map:/
-            );
-            if (headerMatch) {
-                currentMap.source = headerMatch.groups!.source as Category;
-                currentMap.destination = headerMatch.groups!
-                    .destination as Category;
-                i++;
-            }
-
-            const [destinationStart, sourceStart, length] = input[i]
-                .split(" ")
-                .map(Number);
-            currentMap.ranges.push({
-                sourceStart,
-                sourceEnd: sourceStart + length,
-                offset: destinationStart - sourceStart,
-            });
-        }
+        this.seedRanges = convertToRanges(this.seeds);
+        this.maps = parseMaps(input);
     }
 
     solvePart1() {
         const locationNumbers = this.seeds
-            .map((seed) => this.getDestination("seed", "location", seed))
+            .map((seed) => this.translateValue(seed, this.maps[0]))
             .sort((a, b) => a - b);
         return locationNumbers[0];
     }
 
-    solvePart2(): string | number {
-        throw new Error("Method not implemented.");
+    solvePart2() {
+        const lastMap = this.maps[this.maps.length - 1];
+        let ranges = lastMap.ranges
+            .map((range) => ({
+                start: range.nextMapStart,
+                end: range.nextMapStart + range.length,
+            }))
+            .sort((a, b) => a.start - b.start);
+        if (ranges[0].start !== 0) {
+            // fill the gap between zero and the first range
+            ranges = [{ start: 0, end: ranges[0].start }, ...ranges];
+        }
+        for (const range of ranges) {
+            for (
+                let locationNumber = range.start;
+                locationNumber < range.end;
+                locationNumber++
+            ) {
+                const seed = this.translateValue(locationNumber, lastMap, true);
+                const seedRange = this.seedRanges.find(
+                    (seedRange) =>
+                        seedRange.start <= seed && seedRange.end >= seed
+                )!;
+                if (seedRange) {
+                    return locationNumber;
+                }
+            }
+        }
+        throw new Error("No solution found");
     }
 
-    private getDestination(
-        source: Category,
-        destination: Category,
-        value: number
+    private translateValue(
+        value: number,
+        startingMap: CategoryMap,
+        backwards = false
     ): number {
-        if (source === destination) {
+        const upcomingMap = backwards
+            ? startingMap.prevMap
+            : startingMap.nextMap;
+        if (upcomingMap === null && !backwards) {
             return value;
         }
-        const currentMap = this.maps.find((map) => map.source === source)!;
-        const range = currentMap.ranges.find(
-            (range) => range.sourceStart <= value && range.sourceEnd >= value
-        );
-        const mappedValue = value + (range?.offset ?? 0);
-        return this.getDestination(
-            currentMap.destination,
-            destination,
-            mappedValue
-        );
+        const range = startingMap.ranges.find((range) => {
+            const rangeStart = backwards
+                ? range.nextMapStart
+                : range.prevMapStart;
+            return rangeStart <= value && rangeStart + range.length > value;
+        });
+        let offset = 0;
+        if (range) {
+            offset = backwards
+                ? range.prevMapStart - range.nextMapStart
+                : range.nextMapStart - range.prevMapStart;
+        }
+        const mappedValue = value + offset;
+        if (upcomingMap === null) {
+            return mappedValue;
+        }
+        return this.translateValue(mappedValue, upcomingMap, backwards);
     }
+}
+
+function convertToRanges(values: number[]) {
+    const result = [] as { start: number; end: number }[];
+    for (let i = 1; i < values.length; i += 2) {
+        const start = values[i - 1];
+        const end = start + values[i];
+        result.push({ start, end });
+    }
+    return result;
+}
+
+function parseMaps(lines: string[]): CategoryMap[] {
+    const result = [] as CategoryMap[];
+    let currentMap: CategoryMap = {
+        label: "",
+        prevMap: null,
+        nextMap: null,
+        ranges: [],
+    };
+    for (let i = 2; i < lines.length; i++) {
+        if (lines[i] === "") {
+            // Map ended
+            const newMap = {
+                label: "",
+                prevMap: currentMap,
+                nextMap: null,
+                ranges: [],
+            };
+            currentMap.nextMap = newMap;
+            result.push(currentMap);
+            currentMap = newMap;
+            continue;
+        }
+
+        const headerMatch = lines[i].match(/(?<from>.+)-to-(?<to>.+) map:/);
+        if (headerMatch) {
+            const { from, to } = headerMatch.groups!;
+            currentMap.label = `${from}-to-${to}`;
+            i++;
+        }
+
+        const [nextMapStart, prevMapStart, length] = lines[i]
+            .split(" ")
+            .map(Number);
+        currentMap.ranges.push({ prevMapStart, nextMapStart, length });
+
+        if (i === lines.length - 1) {
+            result.push(currentMap);
+        }
+    }
+    return result;
 }
