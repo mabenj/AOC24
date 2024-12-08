@@ -8,9 +8,29 @@
 
 1. `git clone` this repository
 2. `cd` into the repository
-3. `deno install -e main.ts` to install the dependencies
 
-❗ Note: to start from scratch without my solutions, delete everything inside the `lib` directory except for the `commands` and `types` directories and the `common.ts` file.
+❗ Note: to start from scratch without my solutions, delete all the puzzle directories and the `solver-factory,ts` file in the `lib` directory.
+
+## Project Structure
+
+```
+📦
+├─ lib/
+│  ├─ yyDd/                       # puzzle directory for year `yy` and day `d`
+│  │  ├─ input.txt                # input for the puzzle (git ignored)
+│  │  ├─ puzzle.md                # problem description (git ignored)
+│  │  └─ solver.ts                # solution for the puzzle
+│  ├─ commands/
+│  │  ├─ init.ts                  # command to scaffold a new puzzle directory
+│  │  └─ solve.ts                 # command to solve a puzzle
+│  ├─ tests/
+│  │  ├─ main_test.ts             # unit tests for all the solvers
+│  │  └─ main_test_answers.json   # correct answers for the puzzles
+│  ├─ common.ts                   # common utility code
+│  └─ solver-factory.ts           # factory for creating solvers
+├─ deno.json                      # Deno configuration
+└─ main.ts                        # entry point for the program
+```
 
 ## Usage
 
@@ -38,4 +58,4 @@ _Defaults:_
 
 `deno test` will run all the solvers and test their output
 
-❗ Note: the tests expect a file `main_test_answers.json` in the `lib/tests` directory with the correct answers for each puzzle. You can use the `main_test_answers.example.json` file as a template to create your own file.
+❗ Note: the tests expects the `lib/tests/main_test-answers.json` file to contain the correct answers for the puzzles.

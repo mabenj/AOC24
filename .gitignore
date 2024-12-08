@@ -2,5 +2,4 @@
 /lib/*/input.txt
 /lib/*/puzzle.md
 /.aoc-cache
-/lib/tests/main_test_answers.json
 /.vscode/launch.json
