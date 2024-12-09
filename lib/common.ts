@@ -88,3 +88,14 @@ export function toDictionary<T, K extends keyof T>(
         return acc;
     }, {} as Record<string, T>);
 }
+
+export function groupBy<T, K extends keyof T>(array: T[], key: K) {
+    return array.reduce((acc, curr) => {
+        const keyValue = curr[key]?.toString();
+        if (keyValue) {
+            acc[keyValue] = acc[keyValue] ?? [];
+            acc[keyValue].push(curr);
+        }
+        return acc;
+    }, {} as Record<string, T[]>);
+}
