@@ -3,6 +3,7 @@ import SolverFactory from "../solver-factory.ts";
 import * as path from "jsr:@std/path";
 import { DOMParser } from "jsr:@b-fuze/deno-dom";
 import { initializePuzzle } from "./init.ts";
+import os from "node:os";
 
 export default async function solve(year: string, day: string, part: string) {
     const puzzleId = `${year}D${day}`;
@@ -25,14 +26,17 @@ export default async function solve(year: string, day: string, part: string) {
         solver.parseInput(input.split(LINE_SEPARATOR));
         const output = solveMethod();
         const endTime = performance.now();
+        const duration = endTime - startTime;
 
         console.log(
             `Solved ${puzzleId} part ${part}: %c${output} %c(${prettyDuration(
-                endTime - startTime
+                duration
             )})`,
             "color: green",
             "color: gray"
         );
+
+        await writeBenchmark(puzzleDir, part, duration);
 
         if (confirm("Do you want to submit this answer?")) {
             const isCorrect = await submitAnswer(output, year, day, part);
@@ -51,6 +55,27 @@ export default async function solve(year: string, day: string, part: string) {
         );
         throw e;
     }
+}
+
+async function writeBenchmark(
+    puzzleDir: string,
+    part: string,
+    duration: number
+) {
+    const json = {
+        deno: Deno.version.deno,
+        os: Deno.build.os,
+        arch: Deno.build.arch,
+        memory:
+            (Deno.systemMemoryInfo().total / 1024 / 1024 / 1024).toFixed(2) +
+            " GB",
+        cpu: os.cpus()[0].model.replaceAll("\x00", "").trim(),
+        duration: prettyDuration(duration),
+        timestamp: new Date().toISOString(),
+    };
+    const benchmarkPath = path.join(puzzleDir, `benchmark-part-${part}.json`);
+    console.log(`Writing benchmark to %c${benchmarkPath}`, "color: gray");
+    await Deno.writeTextFile(benchmarkPath, JSON.stringify(json, null, 2));
 }
 
 async function submitAnswer(
