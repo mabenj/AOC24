@@ -73,3 +73,16 @@ export async function fileExists(path: string) {
         return false;
     }
 }
+
+export function toDictionary<T, K extends keyof T>(
+    array: T[],
+    key: K
+): Record<string, T> {
+    return array.reduce((acc, curr) => {
+        const keyValue = curr[key]?.toString();
+        if (keyValue) {
+            acc[keyValue] = curr;
+        }
+        return acc;
+    }, {} as Record<string, T>);
+}
