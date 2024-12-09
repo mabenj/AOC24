@@ -4,6 +4,6 @@
   "arch": "x86_64",
   "memory": "31.93 GB",
   "cpu": "AMD Ryzen 7 5800X3D 8-Core Processor",
-  "duration": "964µs 199ns",
-  "timestamp": "2024-12-09T20:10:29.208Z"
+  "duration": 0.9561999999999955,
+  "timestamp": "2024-12-09T23:24:40.082Z"
 }

@@ -4,6 +4,6 @@ export type BenchmarkInfo = {
     arch: string;
     memory: string;
     cpu: string;
-    duration: string;
+    duration: number;
     timestamp: string;
 };

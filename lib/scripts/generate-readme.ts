@@ -1,5 +1,5 @@
 import path from "node:path";
-import { fileExists, groupBy } from "../common.ts";
+import { fileExists, groupBy, prettyDuration } from "../common.ts";
 import { BenchmarkInfo } from "../types/benchmark-info.ts";
 
 type PuzzleData = {
@@ -102,12 +102,14 @@ async function generateReadme(puzzles: PuzzleData[]) {
                 const part2Hw = generateHwString(part2?.benchmark);
                 const part1HwRef = hardwareConfigs.indexOf(part1Hw ?? "") + 1;
                 const part2HwRef = hardwareConfigs.indexOf(part2Hw ?? "") + 1;
+                const part1Duration = part1?.benchmark?.duration
+                    ? prettyDuration(part1.benchmark.duration)
+                    : "N/A";
+                const part2Duration = part2?.benchmark?.duration
+                    ? prettyDuration(part2.benchmark.duration)
+                    : "N/A";
                 result.push(
-                    `| [Day ${day}](/lib/${year}D${day}/solver.ts) | ${
-                        part1?.benchmark?.duration || "N/A"
-                    } <sup>${part1HwRef}</sup> | ${
-                        part2?.benchmark?.duration || "N/A"
-                    } <sup>${part2HwRef}</sup> |`
+                    `| [Day ${day}](/lib/${year}D${day}/solver.ts) | ${part1Duration} <sup>${part1HwRef}</sup> | ${part2Duration} <sup>${part2HwRef}</sup> |`
                 );
             }
             result.push("");

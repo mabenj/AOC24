@@ -70,7 +70,7 @@ async function writeBenchmark(
             (Deno.systemMemoryInfo().total / 1024 / 1024 / 1024).toFixed(2) +
             " GB",
         cpu: os.cpus()[0].model.replaceAll("\x00", "").trim(),
-        duration: prettyDuration(duration),
+        duration: duration,
         timestamp: new Date().toISOString(),
     };
     const benchmarkPath = path.join(puzzleDir, `benchmark-part-${part}.json`);

@@ -10,9 +10,10 @@ export function prettyNumber(number: number | undefined) {
 }
 
 export function prettyDuration(durationMs: number) {
-    return prettyMs(durationMs, {
-        formatSubMilliseconds: durationMs < 5,
-    });
+    if (durationMs < 1) {
+        return `${durationMs.toFixed(1)}ms`;
+    }
+    return prettyMs(durationMs);
 }
 
 export const LINE_SEPARATOR = "\n";
