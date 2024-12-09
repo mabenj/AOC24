@@ -74,14 +74,17 @@ async function generateReadme(puzzles: PuzzleData[]) {
     function generateBenchmarksTable() {
         const result = [] as string[];
         result.push("");
-        result.push(`*Generated at ${new Date().toISOString()}*`);
+        for (let i = 0; i < hardwareConfigs.length; i++) {
+            const hwConfig = hardwareConfigs[i];
+            result.push(`${i + 1}. *${hwConfig}*`);
+        }
+        result.push("");
 
         const puzzlesByYear = groupBy(puzzles, "year");
         const years = Object.keys(puzzlesByYear)
             .map(Number)
             .sort((a, b) => b - a);
         for (const year of years) {
-            result.push("");
             result.push(`| 20${year} | Part 1 | Part 2 |`);
             result.push(`| --- | --- | --- |`);
             const puzzlesByDay = groupBy(puzzlesByYear[year], "day");
@@ -110,11 +113,7 @@ async function generateReadme(puzzles: PuzzleData[]) {
             result.push("");
         }
 
-        for (let i = 0; i < hardwareConfigs.length; i++) {
-            const hwConfig = hardwareConfigs[i];
-            result.push(`${i + 1}. *${hwConfig}*`);
-        }
-
+        result.push(`> Generated at ${new Date().toUTCString()}`);
         result.push("");
 
         return result;

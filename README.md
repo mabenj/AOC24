@@ -1,5 +1,7 @@
 # 🎄 Advent of Code in Deno/TypeScript
 
+## Solutions
+
 ## Prerequisites
 
 -   [Deno](https://deno.land/)
