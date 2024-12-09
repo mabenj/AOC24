@@ -116,8 +116,9 @@ async function generateReadme(puzzles: PuzzleData[]) {
         }
 
         result.push(
-            `> Generated at ${new Date().toUTCString()} [![Generate README](https://github.com/mabenj/aoc-deno-ts/actions/workflows/generate-readme.yml/badge.svg)](https://github.com/mabenj/aoc-deno-ts/actions/workflows/generate-readme.yml)`
+            "[![Generate README](https://github.com/mabenj/aoc-deno-ts/actions/workflows/generate-readme.yml/badge.svg)](https://github.com/mabenj/aoc-deno-ts/actions/workflows/generate-readme.yml)"
         );
+        result.push(`> Generated at ${new Date().toUTCString()}`);
         result.push("");
 
         return result;
