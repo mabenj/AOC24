@@ -2,6 +2,30 @@
 
 ## Solutions
 
+1. *deno 2.1.2, windows x86_64, 31.93 GB, AMD Ryzen 7 5800X3D 8-Core Processor*
+
+| 2024 | Part 1 | Part 2 |
+| --- | --- | --- |
+| [Day 1](/lib/24D1/solver.ts) | 1ms 50µs 399ns <sup>1</sup> | 819µs 500ns <sup>1</sup> |
+| [Day 2](/lib/24D2/solver.ts) | 964µs 199ns <sup>1</sup> | 1ms 504µs 500ns <sup>1</sup> |
+| [Day 3](/lib/24D3/solver.ts) | 1ms 516µs 199ns <sup>1</sup> | 1ms 545µs 400ns <sup>1</sup> |
+| [Day 4](/lib/24D4/solver.ts) | 2ms 827µs 799ns <sup>1</sup> | 2ms 430µs 399ns <sup>1</sup> |
+| [Day 5](/lib/24D5/solver.ts) | 2ms 26µs 800ns <sup>1</sup> | 2ms 125µs <sup>1</sup> |
+| [Day 6](/lib/24D6/solver.ts) | 4ms 350µs 200ns <sup>1</sup> | 6.9s <sup>1</sup> |
+| [Day 7](/lib/24D7/solver.ts) | 115ms <sup>1</sup> | 8.3s <sup>1</sup> |
+| [Day 8](/lib/24D8/solver.ts) | 1ms 699ns <sup>1</sup> | 1ms 870µs 300ns <sup>1</sup> |
+| [Day 9](/lib/24D9/solver.ts) | 962ms <sup>1</sup> | 422ms <sup>1</sup> |
+
+| 2023 | Part 1 | Part 2 |
+| --- | --- | --- |
+| [Day 1](/lib/23D1/solver.ts) | 784µs 100ns <sup>1</sup> | 22ms <sup>1</sup> |
+| [Day 2](/lib/23D2/solver.ts) | 813µs 600ns <sup>1</sup> | 860µs 600ns <sup>1</sup> |
+| [Day 3](/lib/23D3/solver.ts) | 2ms 277µs 99ns <sup>1</sup> | 1ms 355µs 199ns <sup>1</sup> |
+| [Day 4](/lib/23D4/solver.ts) | 1ms 181µs 600ns <sup>1</sup> | 111ms <sup>1</sup> |
+| [Day 5](/lib/23D5/solver.ts) | 771µs 399ns <sup>1</sup> | 14.5s <sup>1</sup> |
+
+> Generated at Mon, 09 Dec 2024 23:15:29 GMT
+
 ## Prerequisites
 
 -   [Deno](https://deno.land/)

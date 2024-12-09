@@ -1,5 +1,8 @@
 name: Generate README
 
+permissions:
+  contents: write
+
 on:
     push:
         branches:
