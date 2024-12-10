@@ -109,7 +109,11 @@ async function generateReadme(puzzles: PuzzleData[]) {
                     ? prettyDuration(part2.benchmark.duration)
                     : "N/A";
                 result.push(
-                    `| [Day ${day}](/lib/${year}D${day}/solver.ts) | ${part1Duration} <sup>${part1HwRef}</sup> | ${part2Duration} <sup>${part2HwRef}</sup> |`
+                    `| [Day ${day}](/lib/${year}D${day}/solver.ts) | ${part1Duration} ${
+                        part1HwRef ? "<sup>" + part1HwRef + "</sup>" : ""
+                    } | ${part2Duration} ${
+                        part2HwRef ? "<sup>" + part2HwRef + "</sup>" : ""
+                    } |`
                 );
             }
             result.push("");
