@@ -5,7 +5,7 @@
 1. *deno 2.1.2, windows x86_64, 31.93 GB, AMD Ryzen 7 5800X3D 8-Core Processor*
 
 | 2024 | Part 1 | Part 2 |
-| --- | --- | --- |
+| :--- | ---: | ---: |
 | [Day 1](/lib/24D1/solver.ts) | 1ms <sup>1</sup> | 0.8ms <sup>1</sup> |
 | [Day 2](/lib/24D2/solver.ts) | 1.0ms <sup>1</sup> | 1ms <sup>1</sup> |
 | [Day 3](/lib/24D3/solver.ts) | 2ms <sup>1</sup> | 2ms <sup>1</sup> |
@@ -18,7 +18,7 @@
 | [Day 10](/lib/24D10/solver.ts) | N/A  | N/A  |
 
 | 2023 | Part 1 | Part 2 |
-| --- | --- | --- |
+| :--- | ---: | ---: |
 | [Day 1](/lib/23D1/solver.ts) | 0.8ms <sup>1</sup> | 22ms <sup>1</sup> |
 | [Day 2](/lib/23D2/solver.ts) | 0.8ms <sup>1</sup> | 0.8ms <sup>1</sup> |
 | [Day 3](/lib/23D3/solver.ts) | 2ms <sup>1</sup> | 1ms <sup>1</sup> |
@@ -26,7 +26,7 @@
 | [Day 5](/lib/23D5/solver.ts) | 0.8ms <sup>1</sup> | 14.5s <sup>1</sup> |
 
 [![Generate README](https://github.com/mabenj/aoc-deno-ts/actions/workflows/generate-readme.yml/badge.svg)](https://github.com/mabenj/aoc-deno-ts/actions/workflows/generate-readme.yml)
-> Generated at Tue, 10 Dec 2024 21:22:24 GMT
+> Generated at Tue, 10 Dec 2024 21:27:27 GMT
 
 ## Prerequisites
 
