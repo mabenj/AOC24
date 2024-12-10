@@ -86,7 +86,7 @@ async function generateReadme(puzzles: PuzzleData[]) {
             .sort((a, b) => b - a);
         for (const year of years) {
             result.push(`| 20${year} | Part 1 | Part 2 |`);
-            result.push(`| --- | --- | --- |`);
+            result.push(`| :--- | ---: | ---: |`);
             const puzzlesByDay = groupBy(puzzlesByYear[year], "day");
             const days = Object.keys(puzzlesByDay)
                 .map(Number)
