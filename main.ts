@@ -6,6 +6,7 @@ import { determineLatestPuzzle } from "./lib/common.ts";
 
 const flags = parseArgs(Deno.args, {
     string: ["d", "day", "p", "part", "y", "year"],
+    boolean: ["h", "help"],
 });
 
 async function main() {
@@ -13,8 +14,9 @@ async function main() {
     const day = flags.d || flags.day || determineLatestPuzzle().day;
     const part = flags.p || flags.part || "1";
     const year = flags.y || flags.year || determineLatestPuzzle().year;
+    const help = flags.h || flags.help;
 
-    if ((part !== "1" && part !== "2") || +day < 1 || +day > 25) {
+    if (help || (part !== "1" && part !== "2") || +day < 1 || +day > 25) {
         return printUsage();
     }
 
@@ -31,9 +33,9 @@ async function main() {
 function printUsage() {
     console.log("Usage:");
     console.log(
-        "    main.ts solve [-d, --day <day>] [-p, --part <1 | 2>] [-y, --year <year>]"
+        "    deno run solve [-d, --day <day>] [-p, --part <1 | 2>] [-y, --year <year>]"
     );
-    console.log("    main.ts init [-d, --day <day>] [-y, --year <year>]");
+    console.log("    deno run init [-d, --day <day>] [-y, --year <year>]");
 }
 
 if (import.meta.main) {
