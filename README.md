@@ -40,7 +40,7 @@
 1. `git clone` this repository
 2. `cd` into the repository
 
-❗ Note: to start from scratch without my solutions, delete all the puzzle directories and the `solver-factory,ts` file in the `lib` directory.
+❗ Note: to start from scratch without my solutions, delete all the puzzle directories and the `solver-factory.ts` file in the `lib` directory.
 
 ## Project Structure
 
