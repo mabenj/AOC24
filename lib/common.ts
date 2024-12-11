@@ -100,3 +100,19 @@ export function groupBy<T, K extends keyof T>(array: T[], key: K) {
         return acc;
     }, {} as Record<string, T[]>);
 }
+
+// deno-lint-ignore no-explicit-any
+export function memoize<R, T extends (...args: any[]) => R>(f: T): T {
+    const memory = new Map<string, R>();
+
+    // deno-lint-ignore no-explicit-any
+    const g = (...args: any[]) => {
+        if (!memory.get(args.join())) {
+            memory.set(args.join(), f(...args));
+        }
+
+        return memory.get(args.join());
+    };
+
+    return g as T;
+}
