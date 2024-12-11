@@ -31,10 +31,12 @@ export function determineLatestPuzzle(): { year: string; day: string } {
     }
     if (now < end) {
         // current year's current puzzle
-        const today = now.getDate();
+        const today = now.getUTCDate();
+        const hour = now.getUTCHours();
+        const day = hour >= 5 ? today : today - 1;
         return {
             year: start.getFullYear().toString().slice(-2),
-            day: today.toString(),
+            day: day.toString(),
         };
     }
 

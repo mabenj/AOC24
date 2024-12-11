@@ -2,7 +2,7 @@
     "tasks": {
         "dev": "deno run --watch main.ts",
         "solve": "deno run --allow-read --allow-write --allow-env --allow-sys main.ts solve",
-        "init": "deno run --allow-read --allow-write --allow-env --allow-sys main.ts init",
+        "init": "deno run --allow-read --allow-write --allow-env --allow-net --allow-sys main.ts init",
         "test": "deno test --allow-read --allow-write --allow-env --allow-sys"
     },
     "imports": {
