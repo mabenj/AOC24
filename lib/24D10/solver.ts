@@ -1,4 +1,3 @@
-import { LINE_SEPARATOR } from "../common.ts";
 import { PuzzleSolver } from "../types/puzzle-solver.ts";
 
 const DIRECTIONS = {
@@ -8,84 +7,91 @@ const DIRECTIONS = {
     west: [-1, 0],
 };
 
-const TOPO_PROFILE = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
-
-const EXAMPLE = `89010123
-78121874
-87430965
-96549874
-45678903
-32019012
-01329801
-10456732`;
-
-type Coordinate = { x: number; y: number };
-type Trail = Coordinate[];
+type Trail = { x: number; y: number }[];
 
 export default class Solver24D10 implements PuzzleSolver {
     private grid: number[][] = [];
 
     parseInput(input: string[]) {
-        input = EXAMPLE.split(LINE_SEPARATOR);
         this.grid = input
             .filter((line) => !!line)
             .map((line) => line.split("").map(Number));
     }
 
     solvePart1() {
-        const trailHeads = getAllTrails(this.grid);
-        return sumTrailScores(trailHeads);
+        const trails = this.getAllTrails();
+        return sumTrailScores(trails);
     }
 
-    solvePart2(): number | string {
-        throw new Error("Method not implemented.");
+    solvePart2() {
+        const trails = this.getAllTrails();
+        return sumTrailRatings(trails);
     }
-}
 
-function getAllTrails(grid: number[][]): Trail[] {
-    const result: Trail[] = [];
-    for (let y = 0; y < grid.length; y++) {
-        for (let x = 0; x < grid[y].length; x++) {
-            const trails = getTrailsStartingFrom(grid, x, y);
-            result.push(...trails);
-        }
-    }
-    return result;
-}
-
-function getTrailsStartingFrom(
-    grid: number[][],
-    x: number,
-    y: number
-): Trail[] {
-    if (gridAt(grid, x, y) !== TOPO_PROFILE[0]) {
-        return [];
-    }
-    const result: Trail[] = [];
-    let currentTrail: Trail = [{ x, y }];
-    let allTrailsFound = false;
-    while (!allTrailsFound) {
-        const expectedTopo = TOPO_PROFILE[currentTrail.length];
-        for (const [dx, dy] of Object.values(DIRECTIONS)) {
-            const topoCandidate = gridAt(grid, x + dx, y + dy);
-            if (topoCandidate !== expectedTopo) {
-                continue;
+    private getAllTrails(): Trail[] {
+        const result: Trail[] = [];
+        for (let y = 0; y < this.grid.length; y++) {
+            for (let x = 0; x < this.grid[y].length; x++) {
+                const trails = this.getTrailsStartingFrom(
+                    x,
+                    y,
+                    [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+                );
+                result.push(...trails);
             }
-            x += dx;
-            y += dy;
-            currentTrail.push({ x, y });
         }
+        return result;
     }
-    return result;
-}
 
-function gridAt(grid: number[][], x: number, y: number): number | null {
-    if (x < 0 || y < 0) {
-        return null;
+    private getTrailsStartingFrom(
+        x: number,
+        y: number,
+        profile: number[]
+    ): Trail[] {
+        const current = this.gridAt(x, y);
+        if (current == null || current !== profile[0]) {
+            return [];
+        }
+        if (profile.length === 1) {
+            return [[{ x, y }]];
+        }
+        const result: Trail[] = [];
+        for (const [dx, dy] of Object.values(DIRECTIONS)) {
+            const trails = this.getTrailsStartingFrom(
+                x + dx,
+                y + dy,
+                profile.slice(1)
+            );
+            for (let trail of trails) {
+                trail = [{ x, y }, ...trail];
+                if (trail.length !== profile.length) {
+                    continue;
+                }
+                result.push(trail);
+            }
+        }
+        return result;
     }
-    return grid[y]?.[x] ?? null;
+
+    private gridAt(x: number, y: number): number | null {
+        if (x < 0 || y < 0) {
+            return null;
+        }
+        return this.grid[y]?.[x] ?? null;
+    }
 }
 
 function sumTrailScores(trails: Trail[]): number {
-    return 0;
+    const distinctStartEndPoints = new Set(
+        trails.map((trail) => {
+            const start = trail[0];
+            const end = trail[trail.length - 1];
+            return `${start.x},${start.y} -> ${end.x},${end.y}`;
+        })
+    );
+    return distinctStartEndPoints.size;
+}
+
+function sumTrailRatings(trails: Trail[]): number {
+    return trails.length;
 }
