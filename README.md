@@ -2,34 +2,33 @@
 
 ## Solutions
 
-1. _deno 2.1.2, windows x86_64, 31.76 GB, Intel(R) Core(TM) i7-9850H CPU @ 2.60GHz_
-2. _deno 2.1.2, windows x86_64, 31.93 GB, AMD Ryzen 7 5800X3D 8-Core Processor_
+1. *deno 2.1.2, windows x86_64, 31.76 GB, Intel(R) Core(TM) i7-9850H CPU @ 2.60GHz*
+2. *deno 2.1.2, windows x86_64, 31.93 GB, AMD Ryzen 7 5800X3D 8-Core Processor*
 
-| 2024                           |             Part 1 |             Part 2 |
-| :----------------------------- | -----------------: | -----------------: |
-| [Day 1](/lib/24D1/solver.ts)   |   1ms <sup>2</sup> | 0.8ms <sup>2</sup> |
-| [Day 2](/lib/24D2/solver.ts)   | 1.0ms <sup>2</sup> |   1ms <sup>2</sup> |
-| [Day 3](/lib/24D3/solver.ts)   |   2ms <sup>2</sup> |   2ms <sup>2</sup> |
-| [Day 4](/lib/24D4/solver.ts)   |   3ms <sup>2</sup> |   3ms <sup>2</sup> |
-| [Day 5](/lib/24D5/solver.ts)   |   2ms <sup>2</sup> |   2ms <sup>2</sup> |
-| [Day 6](/lib/24D6/solver.ts)   |   4ms <sup>2</sup> |  6.9s <sup>2</sup> |
-| [Day 7](/lib/24D7/solver.ts)   | 114ms <sup>2</sup> |  8.2s <sup>2</sup> |
-| [Day 8](/lib/24D8/solver.ts)   | 1.0ms <sup>2</sup> |   2ms <sup>2</sup> |
-| [Day 9](/lib/24D9/solver.ts)   | 960ms <sup>2</sup> | 436ms <sup>2</sup> |
-| [Day 10](/lib/24D10/solver.ts) |   8ms <sup>1</sup> |   7ms <sup>1</sup> |
-| [Day 11](/lib/24D11/solver.ts) |   3ms <sup>1</sup> |  82ms <sup>1</sup> |
+| 2024 | Part 1 | Part 2 |
+| :--- | ---: | ---: |
+| [Day 1](/lib/24D1/solver.ts) | 1ms <sup>2</sup> | 0.8ms <sup>2</sup> |
+| [Day 2](/lib/24D2/solver.ts) | 1.0ms <sup>2</sup> | 1ms <sup>2</sup> |
+| [Day 3](/lib/24D3/solver.ts) | 2ms <sup>2</sup> | 2ms <sup>2</sup> |
+| [Day 4](/lib/24D4/solver.ts) | 3ms <sup>2</sup> | 3ms <sup>2</sup> |
+| [Day 5](/lib/24D5/solver.ts) | 2ms <sup>2</sup> | 2ms <sup>2</sup> |
+| [Day 6](/lib/24D6/solver.ts) | 4ms <sup>2</sup> | 6.9s <sup>2</sup> |
+| [Day 7](/lib/24D7/solver.ts) | 114ms <sup>2</sup> | 8.2s <sup>2</sup> |
+| [Day 8](/lib/24D8/solver.ts) | 1.0ms <sup>2</sup> | 2ms <sup>2</sup> |
+| [Day 9](/lib/24D9/solver.ts) | 960ms <sup>2</sup> | 436ms <sup>2</sup> |
+| [Day 10](/lib/24D10/solver.ts) | 8ms <sup>1</sup> | 7ms <sup>1</sup> |
+| [Day 11](/lib/24D11/solver.ts) | 2ms <sup>2</sup> | 38ms <sup>2</sup> |
 
-| 2023                         |             Part 1 |             Part 2 |
-| :--------------------------- | -----------------: | -----------------: |
-| [Day 1](/lib/23D1/solver.ts) | 0.8ms <sup>2</sup> |  22ms <sup>2</sup> |
+| 2023 | Part 1 | Part 2 |
+| :--- | ---: | ---: |
+| [Day 1](/lib/23D1/solver.ts) | 0.8ms <sup>2</sup> | 22ms <sup>2</sup> |
 | [Day 2](/lib/23D2/solver.ts) | 0.8ms <sup>2</sup> | 0.8ms <sup>2</sup> |
-| [Day 3](/lib/23D3/solver.ts) |   2ms <sup>2</sup> |   1ms <sup>2</sup> |
-| [Day 4](/lib/23D4/solver.ts) |   1ms <sup>2</sup> | 112ms <sup>2</sup> |
+| [Day 3](/lib/23D3/solver.ts) | 2ms <sup>2</sup> | 1ms <sup>2</sup> |
+| [Day 4](/lib/23D4/solver.ts) | 1ms <sup>2</sup> | 112ms <sup>2</sup> |
 | [Day 5](/lib/23D5/solver.ts) | 0.8ms <sup>2</sup> | 14.5s <sup>2</sup> |
 
 [![Generate README](https://github.com/mabenj/aoc-deno-ts/actions/workflows/generate-readme.yml/badge.svg)](https://github.com/mabenj/aoc-deno-ts/actions/workflows/generate-readme.yml)
-
-> Generated at Wed, 11 Dec 2024 13:51:01 GMT
+> Generated at Wed, 11 Dec 2024 22:32:18 GMT
 
 ## Prerequisites
 
