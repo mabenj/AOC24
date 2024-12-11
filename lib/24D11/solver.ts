@@ -1,115 +1,93 @@
 import { PuzzleSolver } from "../types/puzzle-solver.ts";
 
-const EXAMPLE = `125 17`;
-
-type Stone = {
-    value: number;
-    next: Stone | null;
-};
-
 export default class Solver24D11 implements PuzzleSolver {
-    private firstStone: Stone | null = null;
+    private initialStones: number[] = [];
     private memoizedStoneNumbers = new Map<number, number | [number, number]>();
 
     parseInput(input: string[]) {
-        // input = [EXAMPLE];
-        input[0]
-            .split(" ")
-            .map(Number)
-            .forEach((num) => {
-                const stone: Stone = {
-                    value: num,
-                    next: null,
-                };
-                if (this.firstStone === null) {
-                    this.firstStone = stone;
-                } else {
-                    let prevStone = this.firstStone;
-                    while (prevStone.next !== null) {
-                        prevStone = prevStone.next;
-                    }
-                    prevStone.next = stone;
-                }
-            });
+        this.initialStones = input[0].split(" ").map(Number);
     }
 
     solvePart1() {
-        this.blink(25);
-        return this.countStones();
+        return this.blink(25);
     }
 
     solvePart2() {
-        this.blink(75);
-        return this.countStones();
+        return this.blink(75);
     }
 
     private blink(n: number) {
+        const frequencyMap = new Map<number, number>();
+        this.initialStones.forEach((stoneNumber) =>
+            frequencyMap.set(
+                stoneNumber,
+                (frequencyMap.get(stoneNumber) ?? 0) + 1
+            )
+        );
         for (let blink = 0; blink < n; blink++) {
-            let currentStone = this.firstStone;
-            while (currentStone !== null) {
-                currentStone = this.handleStone(currentStone);
+            const intermediateMap = new Map<number, number>();
+
+            for (const [stoneNumber, count] of frequencyMap) {
+                intermediateMap.set(
+                    stoneNumber,
+                    (intermediateMap.get(stoneNumber) ?? 0) - count
+                );
+                const newStoneNumbers = this.handleStoneNumber(stoneNumber);
+                if (typeof newStoneNumbers === "number") {
+                    intermediateMap.set(
+                        newStoneNumbers,
+                        (intermediateMap.get(newStoneNumbers) ?? 0) + count
+                    );
+                } else {
+                    const [left, right] = newStoneNumbers;
+                    intermediateMap.set(
+                        left,
+                        (intermediateMap.get(left) ?? 0) + count
+                    );
+                    intermediateMap.set(
+                        right,
+                        (intermediateMap.get(right) ?? 0) + count
+                    );
+                }
             }
 
-            // console.log(
-            //     `After ${blink + 1} blinks:`,
-            //     getNumberArray(this.firstStone)
-            // );
-            console.log(`Blink ${blink + 1}`);
+            for (const [stoneNumber, count] of intermediateMap) {
+                const newValue = (frequencyMap.get(stoneNumber) ?? 0) + count;
+                if (newValue === 0) {
+                    frequencyMap.delete(stoneNumber);
+                } else {
+                    frequencyMap.set(stoneNumber, newValue);
+                }
+            }
         }
+
+        return Array.from(frequencyMap.values()).reduce(
+            (acc, curr) => acc + curr,
+            0
+        );
     }
 
-    private handleStone(stone: Stone): Stone | null {
+    private handleStoneNumber(stoneNumber: number): number | [number, number] {
+        if (this.memoizedStoneNumbers.has(stoneNumber)) {
+            return this.memoizedStoneNumbers.get(stoneNumber)!;
+        }
+
         let newStoneNumbers: number | [number, number];
-        if (this.memoizedStoneNumbers.has(stone.value)) {
-            newStoneNumbers = this.memoizedStoneNumbers.get(stone.value)!;
+        if (stoneNumber === 0) {
+            newStoneNumbers = 1;
+        } else if (hasEvenDigits(stoneNumber)) {
+            const str = stoneNumber.toString();
+            const left = Number(str.slice(0, str.length / 2));
+            const right = Number(str.slice(str.length / 2));
+            newStoneNumbers = [left, right];
         } else {
-            if (stone.value === 0) {
-                newStoneNumbers = 1;
-            } else if (hasEvenDigits(stone.value)) {
-                const str = stone.value.toString();
-                const left = Number(str.slice(0, str.length / 2));
-                const right = Number(str.slice(str.length / 2));
-                newStoneNumbers = [left, right];
-            } else {
-                newStoneNumbers = stone.value * 2024;
-            }
-            this.memoizedStoneNumbers.set(stone.value, newStoneNumbers);
+            newStoneNumbers = stoneNumber * 2024;
         }
-
-        if (typeof newStoneNumbers === "number") {
-            stone.value = newStoneNumbers;
-            return stone.next;
-        }
-
-        const newStone = {
-            value: newStoneNumbers[1],
-            next: stone.next,
-        };
-        stone.value = newStoneNumbers[0];
-        stone.next = newStone;
-        return newStone.next;
-    }
-
-    private countStones() {
-        let count = 0;
-        let currentStone = this.firstStone;
-        while (currentStone !== null) {
-            count++;
-            currentStone = currentStone.next;
-        }
-        return count;
+        this.memoizedStoneNumbers.set(stoneNumber, newStoneNumbers);
+        return newStoneNumbers;
     }
 }
 
 function hasEvenDigits(num: number) {
     return num.toString().length % 2 === 0;
-}
-
-function getNumberArray(stone: Stone | null) {
-    const numbers: number[] = [];
-    while (stone !== null) {
-        numbers.push(stone.value);
-        stone = stone.next;
-    }
-    return numbers;
 }
