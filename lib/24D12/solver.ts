@@ -1,16 +1,11 @@
-import { sumNumbers } from "../common.ts";
 import { PuzzleSolver } from "../types/puzzle-solver.ts";
 
-const EXAMPLE = `RRRRIICCFF
-RRRRIICCCF
-VVRRRCCFFF
-VVRCCCJFFF
-VVVVCJJCFE
-VVIVCCJJEE
-VVIIICJJEE
-MIIIIIJJEE
-MIIISIJEEE
-MMMISSJEEE`;
+const EXAMPLE = `AAAAAA
+AAABBA
+AAABBA
+ABBAAA
+ABBAAA
+AAAAAA`;
 
 const DIRECTIONS = [
     [0, -1], // north
@@ -21,7 +16,7 @@ const DIRECTIONS = [
 
 type Region = {
     type: string;
-    perimeterLengths: { [type: string]: number };
+    perimeterSize: number;
     plotCoords: { x: number; y: number }[];
 };
 
@@ -36,6 +31,14 @@ export default class Solver24D12 implements PuzzleSolver {
     }
 
     solvePart1() {
+        return calculateFencePrice(this.discoverAllRegions(), false);
+    }
+
+    solvePart2() {
+        return calculateFencePrice(this.discoverAllRegions(), true);
+    }
+
+    private discoverAllRegions(): Region[] {
         const foundRegions: Region[] = [];
         const visited = new Set<string>();
         const unvisited = this.grid
@@ -52,17 +55,12 @@ export default class Solver24D12 implements PuzzleSolver {
             });
             foundRegions.push(region);
         }
-
-        return calculateFencePrice(foundRegions);
-    }
-
-    solvePart2(): number | string {
-        throw new Error("Method not implemented.");
+        return foundRegions;
     }
 
     private discoverRegion(x: number, y: number): Region {
         const type = this.gridAt(x, y);
-        const perimeterLengths: { [type: string]: number } = {};
+        let perimeterSize = 0;
         const found: Region["plotCoords"] = [];
         const visited = new Set<string>();
 
@@ -81,14 +79,13 @@ export default class Solver24D12 implements PuzzleSolver {
                 if (neighborType === type) {
                     queue.push({ x: x + dx, y: y + dy });
                 } else {
-                    perimeterLengths[neighborType] =
-                        (perimeterLengths[neighborType] ?? 0) + 1;
+                    perimeterSize++;
                     visited.add(`${x + dx},${y + dy}`);
                 }
             }
         }
 
-        return { type, perimeterLengths, plotCoords: found };
+        return { type, perimeterSize, plotCoords: found };
     }
 
     private gridAt(x: number, y: number) {
@@ -99,12 +96,20 @@ export default class Solver24D12 implements PuzzleSolver {
     }
 }
 
-function calculateFencePrice(regions: Region[]) {
+function calculateFencePrice(regions: Region[], useBulkDiscount: boolean) {
     let sum = 0;
     for (const region of regions) {
         const area = region.plotCoords.length;
-        const perimeter = sumNumbers(...Object.values(region.perimeterLengths));
-        sum += area * perimeter;
+        if (useBulkDiscount) {
+            const numberOfSides = calculateNumberOfSides(region);
+            sum += area * numberOfSides;
+        } else {
+            sum += area * region.perimeterSize;
+        }
     }
     return sum;
+}
+
+function calculateNumberOfSides(region: Region): number {
+    throw new Error("Not implemented");
 }
