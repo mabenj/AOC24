@@ -118,3 +118,7 @@ export function memoize<R, T extends (...args: any[]) => R>(f: T): T {
 
     return g as T;
 }
+
+export function sumNumbers(...numbers: number[]) {
+    return numbers.reduce((acc, curr) => acc + curr, 0);
+}
