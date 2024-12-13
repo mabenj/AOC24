@@ -7,7 +7,7 @@ const PRIZE_PATTERN = /Prize: X=(?<x>[0-9]+), Y=(?<y>[0-9]+)/;
 type ArcadeMachine = {
     buttonA: { dx: number; dy: number; cost: number };
     buttonB: { dx: number; dy: number; cost: number };
-    priceCoords: { x: number; y: number };
+    prizeCoords: { x: number; y: number };
 };
 
 export default class Solver24D13 implements PuzzleSolver {
@@ -28,7 +28,7 @@ export default class Solver24D13 implements PuzzleSolver {
             this.machines.push({
                 buttonA: parseButton(input[i]),
                 buttonB: parseButton(input[i + 1]),
-                priceCoords: parsePrize(input[i + 2]),
+                prizeCoords: parsePrize(input[i + 2]),
             });
         }
     }
@@ -42,22 +42,21 @@ export default class Solver24D13 implements PuzzleSolver {
     }
 
     private calculateTokens(prizeOffset: number) {
-        let tokens = 0;
-        for (const machine of this.machines) {
-            const { buttonA, buttonB, priceCoords } = machine;
+        return this.machines.reduce((tokens, machine) => {
+            const { buttonA, buttonB, prizeCoords } = machine;
             const { x, y } = cramersRule(
                 buttonA.dx,
                 buttonA.dy,
                 buttonB.dx,
                 buttonB.dy,
-                priceCoords.x + prizeOffset,
-                priceCoords.y + prizeOffset
+                prizeCoords.x + prizeOffset,
+                prizeCoords.y + prizeOffset
             );
             if (Number.isInteger(x) && Number.isInteger(y)) {
                 tokens += x * buttonA.cost + y * buttonB.cost;
             }
-        }
-        return tokens;
+            return tokens;
+        }, 0);
     }
 }
 
