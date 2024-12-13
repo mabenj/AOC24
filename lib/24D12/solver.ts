@@ -38,18 +38,18 @@ export default class Solver24D12 implements PuzzleSolver {
 
     private discoverAllRegions(): Region[] {
         const foundRegions: Region[] = [];
-        const visited = new Set<string>();
-        const unprocessed = this.grid
-            .map((line, y) => line.map((_, x) => ({ x, y })))
-            .flat();
-        while (unprocessed.length > 0) {
-            const { x, y } = unprocessed.shift()!;
-            if (visited.has(`${x},${y}`)) {
-                continue;
+        const processed = new Set<string>();
+        for (let y = 0; y < this.grid.length; y++) {
+            for (let x = 0; x < this.grid[y].length; x++) {
+                if (processed.has(`${x},${y}`)) {
+                    continue;
+                }
+                const region = this.discoverRegion(x, y);
+                region.plotCoords.forEach((coords) =>
+                    processed.add(`${coords.x},${coords.y}`)
+                );
+                foundRegions.push(region);
             }
-            const region = this.discoverRegion(x, y);
-            region.plotCoords.forEach(({ x, y }) => visited.add(`${x},${y}`));
-            foundRegions.push(region);
         }
         return foundRegions;
     }
