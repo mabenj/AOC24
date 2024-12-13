@@ -1,22 +1,21 @@
+import { objectKeys } from "../common.ts";
 import { PuzzleSolver } from "../types/puzzle-solver.ts";
 
-const EXAMPLE = `AAAAAA
-AAABBA
-AAABBA
-ABBAAA
-ABBAAA
-AAAAAA`;
-
-const DIRECTIONS = [
-    [0, -1], // north
-    [0, 1], // south
-    [1, 0], // east
-    [-1, 0], // west
-];
+const DIRECTIONS = {
+    N: { dx: 0, dy: -1, isDiagonal: false },
+    NE: { dx: 1, dy: -1, isDiagonal: true },
+    E: { dx: 1, dy: 0, isDiagonal: false },
+    SE: { dx: 1, dy: 1, isDiagonal: true },
+    S: { dx: 0, dy: 1, isDiagonal: false },
+    SW: { dx: -1, dy: 1, isDiagonal: true },
+    W: { dx: -1, dy: 0, isDiagonal: false },
+    NW: { dx: -1, dy: -1, isDiagonal: true },
+};
 
 type Region = {
     type: string;
     perimeterSize: number;
+    cornerCount: number;
     plotCoords: { x: number; y: number }[];
 };
 
@@ -24,7 +23,6 @@ export default class Solver24D12 implements PuzzleSolver {
     private grid: string[][] = [];
 
     parseInput(input: string[]) {
-        input = EXAMPLE.split("\n");
         this.grid = input
             .filter((line) => !!line)
             .map((line) => line.split(""));
@@ -41,31 +39,30 @@ export default class Solver24D12 implements PuzzleSolver {
     private discoverAllRegions(): Region[] {
         const foundRegions: Region[] = [];
         const visited = new Set<string>();
-        const unvisited = this.grid
+        const unprocessed = this.grid
             .map((line, y) => line.map((_, x) => ({ x, y })))
             .flat();
-        while (unvisited.length > 0) {
-            const { x, y } = unvisited.shift()!;
+        while (unprocessed.length > 0) {
+            const { x, y } = unprocessed.shift()!;
             if (visited.has(`${x},${y}`)) {
                 continue;
             }
             const region = this.discoverRegion(x, y);
-            region.plotCoords.forEach((coords) => {
-                visited.add(`${coords.x},${coords.y}`);
-            });
+            region.plotCoords.forEach(({ x, y }) => visited.add(`${x},${y}`));
             foundRegions.push(region);
         }
         return foundRegions;
     }
 
-    private discoverRegion(x: number, y: number): Region {
-        const type = this.gridAt(x, y);
+    private discoverRegion(startX: number, startY: number): Region {
+        const type = this.gridAt(startX, startY);
         let perimeterSize = 0;
-        const found: Region["plotCoords"] = [];
+        let cornerCount = 0;
+        const plotCoords: Region["plotCoords"] = [];
         const visited = new Set<string>();
 
         // flood fill
-        const queue = [{ x, y }];
+        const queue = [{ x: startX, y: startY }];
         while (queue.length > 0) {
             const { x, y } = queue.shift()!;
             if (visited.has(`${x},${y}`)) {
@@ -73,19 +70,33 @@ export default class Solver24D12 implements PuzzleSolver {
             }
             visited.add(`${x},${y}`);
 
-            found.push({ x, y });
-            for (const [dx, dy] of DIRECTIONS) {
-                const neighborType = this.gridAt(x + dx, y + dy);
-                if (neighborType === type) {
+            plotCoords.push({ x, y });
+            for (const direction of objectKeys(DIRECTIONS)) {
+                const { dx, dy, isDiagonal } = DIRECTIONS[direction];
+                if (isDiagonal) {
+                    // check if it's a corner
+                    const hasOutwardCorner =
+                        this.gridAt(x + dx, y + dy) !== type &&
+                        this.gridAt(x + dx, y) === type &&
+                        this.gridAt(x, y + dy) === type;
+                    const hasInwardCorner =
+                        this.gridAt(x, y + dy) !== type &&
+                        this.gridAt(x + dx, y) !== type;
+                    if (hasOutwardCorner || hasInwardCorner) {
+                        cornerCount++;
+                    }
+                } else if (this.gridAt(x + dx, y + dy) === type) {
+                    // continue flood fill
                     queue.push({ x: x + dx, y: y + dy });
                 } else {
+                    // found a perimeter
                     perimeterSize++;
                     visited.add(`${x + dx},${y + dy}`);
                 }
             }
         }
 
-        return { type, perimeterSize, plotCoords: found };
+        return { type, perimeterSize, cornerCount, plotCoords };
     }
 
     private gridAt(x: number, y: number) {
@@ -97,19 +108,11 @@ export default class Solver24D12 implements PuzzleSolver {
 }
 
 function calculateFencePrice(regions: Region[], useBulkDiscount: boolean) {
-    let sum = 0;
-    for (const region of regions) {
+    return regions.reduce((acc, region) => {
         const area = region.plotCoords.length;
-        if (useBulkDiscount) {
-            const numberOfSides = calculateNumberOfSides(region);
-            sum += area * numberOfSides;
-        } else {
-            sum += area * region.perimeterSize;
-        }
-    }
-    return sum;
-}
-
-function calculateNumberOfSides(region: Region): number {
-    throw new Error("Not implemented");
+        const multiplier = useBulkDiscount
+            ? region.cornerCount
+            : region.perimeterSize;
+        return acc + area * multiplier;
+    }, 0);
 }
