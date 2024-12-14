@@ -24,7 +24,7 @@ export default async function solve(year: string, day: string, part: string) {
 
         const startTime = performance.now();
         solver.parseInput(input.split(LINE_SEPARATOR));
-        const output = solveMethod();
+        const output = await solveMethod();
         const endTime = performance.now();
         const duration = endTime - startTime;
 
