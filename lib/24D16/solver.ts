@@ -1,21 +1,23 @@
 import { objectKeys } from "../common.ts";
 import { PuzzleSolver } from "../types/puzzle-solver.ts";
 
-const EXAMPLE = `###############
-#.......#....E#
-#.#.###.#.###.#
-#.....#.#...#.#
-#.###.#####.#.#
-#.#.#.......#.#
-#.#.#####.###.#
-#...........#.#
-###.#.#####.#.#
-#...#.....#.#.#
-#.#.#.###.#.#.#
-#.....#...#.#.#
-#.###.#.#.#.#.#
-#S..#.....#...#
-###############`;
+const EXAMPLE = `#################
+#...#...#...#..E#
+#.#.#.#.#.#.#.#.#
+#.#.#.#...#...#.#
+#.#.#.#.###.#.#.#
+#...#.#.#.....#.#
+#.#.#.#.#.#####.#
+#.#...#.#.#.....#
+#.#.#####.#.###.#
+#.#.#.......#...#
+#.#.###.#####.###
+#.#.#...#.....#.#
+#.#.#.#####.###.#
+#.#.#.........#.#
+#.#.#.#########.#
+#S#.............#
+#################`;
 
 type Graph = { [from: Node]: { [to: Node]: number } };
 type Node = `${number},${number},${Direction}`;
@@ -27,7 +29,7 @@ export default class Solver24D16 implements PuzzleSolver {
     private endNodes = new Set<Node>();
 
     parseInput(input: string[]) {
-        input = EXAMPLE.split("\n");
+        // input = EXAMPLE.split("\n");
         const grid = input.filter((line) => !!line).map((row) => row.split(""));
 
         for (let y = 0; y < grid.length; y++) {
@@ -70,14 +72,7 @@ export default class Solver24D16 implements PuzzleSolver {
             priorityQueue.sort((a, b) => a.distance - b.distance);
             const { node: u } = priorityQueue.shift()!;
             if (this.endNodes.has(u)) {
-                const path = [];
-                let v: Node | null = u;
-                while (v) {
-                    path.unshift(v);
-                    v = prev[v];
-                }
-                console.log(path);
-                return path.length - 1;
+                return distances[u];
             }
 
             objectKeys(this.graph[u]).forEach((v) => {
