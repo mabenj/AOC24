@@ -117,6 +117,10 @@ function dijkstra(
         priorityQueue.sort((a, b) => a.distance - b.distance);
         const { node: u } = priorityQueue.shift()!;
 
+        if (!getPaths && endNodes.includes(u)) {
+            return { distance: distances[u], paths: [] };
+        }
+
         const neighbors = objectKeys(graph[u]);
         for (const v of neighbors) {
             const alt = distances[u] + graph[u][v];
