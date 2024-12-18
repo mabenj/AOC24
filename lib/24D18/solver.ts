@@ -2,7 +2,9 @@ import { PuzzleSolver } from "../types/puzzle-solver.ts";
 
 const WIDTH = 70 + 1;
 const HEIGHT = 70 + 1;
-const COORDS_COUNT = 1024;
+const OBSTACLE_COUNT = 1024;
+const START: Node = `${0},${0}`;
+const END: Node = `${WIDTH - 1},${HEIGHT - 1}`;
 
 type Graph = Map<Node, Map<Node, number>>;
 type Node = `${number},${number}`;
@@ -20,37 +22,27 @@ export default class Solver24D18 implements PuzzleSolver {
     }
 
     solvePart1() {
-        const graph = buildGraph(this.obstacles.slice(0, COORDS_COUNT));
-        const distance = dijkstra(
-            graph,
-            `${0},${0}`,
-            `${WIDTH - 1},${HEIGHT - 1}`
-        );
+        const graph = buildGraph(this.obstacles.slice(0, OBSTACLE_COUNT));
+        const distance = dijkstra(graph, START, END);
         return distance;
     }
 
     solvePart2() {
-        const graph = buildGraph(this.obstacles.slice(0, COORDS_COUNT));
-
-        const deleteNodeFromGraph = (node: Node) => {
-            graph.delete(node);
-            graph.values().forEach((neighbors) => {
-                neighbors.delete(node);
-            });
-        };
-
-        for (let i = COORDS_COUNT; i < this.obstacles.length; i++) {
-            deleteNodeFromGraph(this.obstacles[i]);
-            const distance = dijkstra(
-                graph,
-                `${0},${0}`,
-                `${WIDTH - 1},${HEIGHT - 1}`
-            );
+        let leftIdx = OBSTACLE_COUNT + 1;
+        let rightIdx = this.obstacles.length - 1;
+        let boundary: Node = `${0},${0}`;
+        while (leftIdx <= rightIdx) {
+            const midIdx = Math.floor(leftIdx + (rightIdx - leftIdx) / 2);
+            const graph = buildGraph(this.obstacles.slice(0, midIdx + 1));
+            const distance = dijkstra(graph, START, END);
             if (distance === Infinity) {
-                return this.obstacles[i];
+                boundary = this.obstacles[midIdx];
+                rightIdx = midIdx - 1;
+            } else {
+                leftIdx = midIdx + 1;
             }
         }
-        throw new Error("No solution found");
+        return boundary;
     }
 }
 
