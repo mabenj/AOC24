@@ -1,57 +1,26 @@
-import { objectKeys } from "../common.ts";
 import { PuzzleSolver } from "../types/puzzle-solver.ts";
 
-const EXAMPLE = `5,4
-4,2
-4,5
-3,0
-2,1
-6,3
-2,4
-1,5
-0,6
-3,3
-2,6
-5,1
-1,2
-5,5
-2,5
-6,5
-1,4
-0,4
-6,4
-1,1
-6,1
-1,0
-0,5
-1,6
-2,0`;
-// const WIDTH = 6 + 1;
-// const HEIGHT = 6 + 1;
-// const COORDS_COUNT = 12;
 const WIDTH = 70 + 1;
 const HEIGHT = 70 + 1;
 const COORDS_COUNT = 1024;
 
-type Graph = { [from: Node]: { [to: Node]: number } };
+type Graph = Map<Node, Map<Node, number>>;
 type Node = `${number},${number}`;
-type Coordinate = { x: number; y: number };
 
 export default class Solver24D18 implements PuzzleSolver {
-    private coordinates: Coordinate[] = [];
+    private obstacles: Node[] = [];
 
     parseInput(input: string[]) {
-        // input = EXAMPLE.split("\n");
-        this.coordinates = input
+        this.obstacles = input
             .filter((line) => !!line)
             .map((line) => {
                 const [x, y] = line.split(",").map(Number);
-                return { x, y };
+                return `${x},${y}` as Node;
             });
     }
 
     solvePart1() {
-        const graph = buildGraph(this.coordinates.slice(0, COORDS_COUNT));
+        const graph = buildGraph(this.obstacles.slice(0, COORDS_COUNT));
         const distance = dijkstra(
             graph,
             `${0},${0}`,
@@ -60,15 +29,35 @@ export default class Solver24D18 implements PuzzleSolver {
         return distance;
     }
 
-    solvePart2(): number | string {
-        throw new Error("Method not implemented.");
+    solvePart2() {
+        const graph = buildGraph(this.obstacles.slice(0, COORDS_COUNT));
+
+        const deleteNodeFromGraph = (node: Node) => {
+            graph.delete(node);
+            graph.values().forEach((neighbors) => {
+                neighbors.delete(node);
+            });
+        };
+
+        for (let i = COORDS_COUNT; i < this.obstacles.length; i++) {
+            deleteNodeFromGraph(this.obstacles[i]);
+            const distance = dijkstra(
+                graph,
+                `${0},${0}`,
+                `${WIDTH - 1},${HEIGHT - 1}`
+            );
+            if (distance === Infinity) {
+                return this.obstacles[i];
+            }
+        }
+        throw new Error("No solution found");
     }
 }
 
 function dijkstra(graph: Graph, start: Node, end: Node) {
-    const distances: { [node: Node]: number } = {};
-    objectKeys(graph).forEach((node) => (distances[node] = Infinity));
-    distances[start] = 0;
+    const distances = new Map<Node, number>();
+    graph.keys().forEach((node) => distances.set(node, Infinity));
+    distances.set(start, 0);
     const pq: { node: Node; distance: number }[] = [];
     pq.push({ node: start, distance: 0 });
 
@@ -79,47 +68,45 @@ function dijkstra(graph: Graph, start: Node, end: Node) {
             return u.distance;
         }
 
-        const neighbors = objectKeys(graph[u.node]);
-        for (const v of neighbors) {
-            const alt = distances[u.node] + graph[u.node][v];
-            if (alt < distances[v]) {
-                distances[v] = alt;
+        const neighbors = graph.get(u.node)!.entries();
+        for (const [v, distance] of neighbors) {
+            const alt = distances.get(u.node)! + distance;
+            if (alt < distances.get(v)!) {
+                distances.set(v, alt);
                 pq.push({ node: v, distance: alt });
             }
         }
     }
 
-    return distances[end];
+    return distances.get(end)!;
 }
 
-function buildGraph(obstacleCoordinates: Coordinate[]) {
-    const obstacleNodes = new Set(
-        obstacleCoordinates.map(({ x, y }) => `${x},${y}` as Node)
-    );
-    const graph: Graph = {};
+function buildGraph(obstacles: Node[]) {
+    const obstacleSet = new Set(obstacles);
+    const graph: Graph = new Map();
     for (let x = 0; x < WIDTH; x++) {
         for (let y = 0; y < HEIGHT; y++) {
             const node: Node = `${x},${y}`;
-            if (obstacleNodes.has(node)) {
+            if (obstacleSet.has(node)) {
                 continue;
             }
-            graph[node] = {};
+            graph.set(node, new Map());
 
             const north: Node = `${x},${y - 1}`;
             const south: Node = `${x},${y + 1}`;
             const west: Node = `${x - 1},${y}`;
             const east: Node = `${x + 1},${y}`;
-            if (!obstacleNodes.has(north) && y > 0) {
-                graph[node][north] = 1;
+            if (!obstacleSet.has(north) && y > 0) {
+                graph.get(node)!.set(north, 1);
             }
-            if (!obstacleNodes.has(south) && y < HEIGHT - 1) {
-                graph[node][south] = 1;
+            if (!obstacleSet.has(south) && y < HEIGHT - 1) {
+                graph.get(node)!.set(south, 1);
             }
-            if (!obstacleNodes.has(west) && x > 0) {
-                graph[node][west] = 1;
+            if (!obstacleSet.has(west) && x > 0) {
+                graph.get(node)!.set(west, 1);
             }
-            if (!obstacleNodes.has(east) && x < WIDTH - 1) {
-                graph[node][east] = 1;
+            if (!obstacleSet.has(east) && x < WIDTH - 1) {
+                graph.get(node)!.set(east, 1);
             }
         }
     }
