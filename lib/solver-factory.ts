@@ -22,6 +22,7 @@ import Solver24D15 from "./24D15/solver.ts";
 import Solver24D16 from "./24D16/solver.ts";
 import Solver24D17 from "./24D17/solver.ts";
 import Solver24D18 from "./24D18/solver.ts";
+import Solver24D19 from "./24D19/solver.ts";
 
 export default class SolverFactory {
     private static readonly solverMap: { [id: string]: PuzzleSolver } = {};
@@ -52,6 +53,7 @@ export default class SolverFactory {
         SolverFactory.registerSolver("24D16", new Solver24D16());
         SolverFactory.registerSolver("24D17", new Solver24D17());
         SolverFactory.registerSolver("24D18", new Solver24D18());
+        SolverFactory.registerSolver("24D19", new Solver24D19());
     }
 
     static getSolver(id: string): PuzzleSolver {
