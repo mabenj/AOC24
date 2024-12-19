@@ -1,23 +1,10 @@
 import { PuzzleSolver } from "../types/puzzle-solver.ts";
 
-const EXAMPLE = `r, wr, b, g, bwu, rb, gb, br
-
-brwrr
-bggr
-gbbr
-rrbgbr
-ubwu
-bwurrg
-brgr
-bbrgwb
-`;
-
 export default class Solver24D19 implements PuzzleSolver {
     private patterns = new Set<string>();
     private designs = new Array<string>();
 
     parseInput(input: string[]) {
-        // input = EXAMPLE.split("\n");
         this.patterns = new Set(input[0].split(", "));
         this.designs = input.slice(2).filter((line) => !!line);
     }
@@ -47,13 +34,37 @@ export default class Solver24D19 implements PuzzleSolver {
             return false;
         };
 
-        return this.designs.reduce(
-            (acc, design) => acc + (isPossible(design) ? 1 : 0),
-            0
-        );
+        return this.designs.filter(isPossible).length;
     }
 
-    solvePart2(): number | string {
-        throw new Error("Method not implemented.");
+    solvePart2() {
+        const cache = new Map<string, number>();
+
+        const countPossible = (design: string) => {
+            if (cache.has(design)) {
+                return cache.get(design)!;
+            }
+            let sum = 0;
+            let endIdx = 1;
+            while (endIdx <= design.length) {
+                const subDesign = design.slice(0, endIdx);
+                if (this.patterns.has(subDesign)) {
+                    const rest = design.slice(endIdx);
+                    if (rest.length === 0) {
+                        sum++;
+                    } else {
+                        sum += countPossible(rest);
+                    }
+                }
+                endIdx++;
+            }
+            cache.set(design, sum);
+            return sum;
+        };
+
+        return this.designs.reduce(
+            (acc, design) => acc + countPossible(design),
+            0
+        );
     }
 }
