@@ -90,7 +90,7 @@ export default class Solver24D20 implements PuzzleSolver {
 
     solvePart1() {
         const getShortcuts = (node: Node): Shortcut[] => {
-            const startIdx = this.track.findIndex(({ id }) => id === node.id);
+            const fullDistance = distanceToEnd(this.track, node.id);
             const walls = this.adjacencyList
                 .get(node.id)!
                 .filter((neighbor) => neighbor.type === "#");
@@ -103,16 +103,11 @@ export default class Solver24D20 implements PuzzleSolver {
                             neighbor.id !== node.id && neighbor.type === "."
                     );
                 const potentialShortcuts = validExits
-                    .map((exit) => {
-                        const exitIdx = this.track.findIndex(
-                            ({ id }) => id === exit.id
-                        );
-                        return {
-                            start: node,
-                            end: exit,
-                            size: exitIdx - startIdx,
-                        };
-                    })
+                    .map((exit) => ({
+                        start: node,
+                        end: exit,
+                        size: fullDistance - distanceToEnd(this.track, exit.id),
+                    }))
                     .filter(({ size }) => size > 0);
                 const bestShortcut = potentialShortcuts.reduce(
                     (best, current) => {
@@ -132,4 +127,14 @@ export default class Solver24D20 implements PuzzleSolver {
     solvePart2(): number | string {
         throw new Error("Method not implemented.");
     }
+}
+
+const distanceCache = new Map<string, number>();
+function distanceToEnd(track: Node[], nodeId: string) {
+    if (!distanceCache.has(nodeId)) {
+        const distance =
+            track.length - track.findIndex(({ id }) => id === nodeId);
+        distanceCache.set(nodeId, distance);
+    }
+    return distanceCache.get(nodeId)!;
 }
