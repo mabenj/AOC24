@@ -24,113 +24,112 @@ const EXAMPLE = `###############
 ###############
 `;
 
-type TrackNode = {
+type Node = {
+    id: string;
     x: number;
     y: number;
-    id: string;
+    type: "#" | ".";
 };
+type AdjacencyList = Map<string, Node[]>;
 type Shortcut = {
-    start: TrackNode;
-    end: TrackNode;
+    start: Node;
+    end: Node;
     size: number;
 };
 
 export default class Solver24D20 implements PuzzleSolver {
-    private grid: string[][] = [];
+    private adjacencyList: AdjacencyList = new Map();
+    private track: Node[] = [];
 
     parseInput(input: string[]) {
         // input = EXAMPLE.split("\n");
-        this.grid = input
+        const grid = input
             .filter((line) => !!line)
             .map((line) => line.split(""));
+
+        const getNode = (x: number, y: number): Node | null => {
+            const char = grid[y]?.[x];
+            if (!char) return null;
+            const id = `${x},${y}`;
+            return { id, x, y, type: char !== "#" ? "." : "#" };
+        };
+
+        // Build adjacency list
+        let start: Node | undefined;
+        let end: Node | undefined;
+        for (let y = 0; y < grid.length; y++) {
+            for (let x = 0; x < grid[y].length; x++) {
+                const current = getNode(x, y)!;
+                const neighbors: Node[] = [];
+                for (const [dx, dy] of DIRECTIONS) {
+                    const neighbor = getNode(x + dx, y + dy);
+                    if (neighbor) neighbors.push(neighbor);
+                }
+                this.adjacencyList.set(current.id, neighbors);
+
+                if (grid[y][x] === "S") start = current;
+                if (grid[y][x] === "E") end = current;
+            }
+        }
+
+        if (!start || !end) throw new Error("Start or end not found");
+
+        // Discover track
+        let prev: Node | null = null;
+        let current = start;
+        while (this.track.at(-1)?.id !== end.id) {
+            this.track.push(current);
+            const neighbors = this.adjacencyList.get(current.id)!;
+            const next = neighbors.find(
+                (node) => node.id !== prev?.id && node.type === "."
+            )!;
+            prev = current;
+            current = next;
+        }
     }
 
     solvePart1() {
-        const track = discoverTrack(this.grid);
-        const shortcuts = findShortcuts(this.grid, track);
-        return shortcuts.filter(({ size }) => size >= 100).length;
+        const getShortcuts = (node: Node): Shortcut[] => {
+            const startIdx = this.track.findIndex(({ id }) => id === node.id);
+            const walls = this.adjacencyList
+                .get(node.id)!
+                .filter((neighbor) => neighbor.type === "#");
+            const shortcuts: { [endId: string]: Shortcut } = {};
+            for (const wall of walls) {
+                const validExits = this.adjacencyList
+                    .get(wall.id)!
+                    .filter(
+                        (neighbor) =>
+                            neighbor.id !== node.id && neighbor.type === "."
+                    );
+                const potentialShortcuts = validExits
+                    .map((exit) => {
+                        const exitIdx = this.track.findIndex(
+                            ({ id }) => id === exit.id
+                        );
+                        return {
+                            start: node,
+                            end: exit,
+                            size: exitIdx - startIdx,
+                        };
+                    })
+                    .filter(({ size }) => size > 0);
+                const bestShortcut = potentialShortcuts.reduce(
+                    (best, current) => {
+                        return best.size > current.size ? best : current;
+                    },
+                    potentialShortcuts[0]
+                );
+                if (bestShortcut) shortcuts[bestShortcut.end.id] = bestShortcut;
+            }
+            return Object.values(shortcuts);
+        };
+
+        const allShortcuts = this.track.flatMap(getShortcuts);
+        return allShortcuts.filter(({ size }) => size - 2 >= 100).length;
     }
 
     solvePart2(): number | string {
         throw new Error("Method not implemented.");
     }
-}
-
-function discoverTrack(grid: string[][]): TrackNode[] {
-    let currentY = grid.findIndex((row) => row.includes("S"));
-    let currentX = grid[currentY].indexOf("S");
-    let prevX = -1;
-    let prevY = -1;
-
-    const canMoveTo = (x: number, y: number) =>
-        grid[y][x] !== "#" && (x !== prevX || y !== prevY);
-
-    const track: TrackNode[] = [];
-    while (prevX !== currentX || prevY !== currentY) {
-        track.push({ x: currentX, y: currentY, id: `${currentX},${currentY}` });
-        if (grid[currentY][currentX] === "E") break;
-        const canGoNorth = canMoveTo(currentX, currentY - 1);
-        const canGoEast = canMoveTo(currentX + 1, currentY);
-        const canGoSouth = canMoveTo(currentX, currentY + 1);
-        const canGoWest = canMoveTo(currentX - 1, currentY);
-        prevX = currentX;
-        prevY = currentY;
-        if (canGoNorth) currentY--;
-        if (canGoEast) currentX++;
-        if (canGoSouth) currentY++;
-        if (canGoWest) currentX--;
-    }
-    return track;
-}
-
-function findShortcuts(grid: string[][], track: TrackNode[]) {
-    const distanceCache = new Map<string, number>();
-
-    const distanceToEnd = (nodeId: string) => {
-        if (distanceCache.has(nodeId)) return distanceCache.get(nodeId)!;
-        const idx = track.findIndex(({ id }) => id === nodeId);
-        const distance = track.length - 1 - idx;
-        distanceCache.set(nodeId, distance);
-        return distance;
-    };
-
-    const getShortcuts = (node: TrackNode): Shortcut[] => {
-        const currentDistance = distanceToEnd(node.id);
-
-        const getShortcut = (x: number, y: number) => {
-            if (grid[y]?.[x] !== "." && grid[y]?.[x] !== "E") return null;
-            const id = `${x},${y}`;
-            const size = currentDistance - 2 - distanceToEnd(id);
-            if (size <= 0) return null;
-            return { start: node, end: { x, y, id }, size };
-        };
-
-        const shortcuts: { [endId: string]: Shortcut } = {};
-        for (const [dx, dy] of DIRECTIONS) {
-            const wallX = node.x + dx;
-            const wallY = node.y + dy;
-            const isValidWall = grid[wallY][wallX] === "#";
-            if (!isValidWall) continue;
-
-            const potentialShortcuts = [
-                getShortcut(wallX, wallY - 1),
-                getShortcut(wallX + 1, wallY),
-                getShortcut(wallX, wallY + 1),
-                getShortcut(wallX - 1, wallY),
-            ].filter((shortcut) => shortcut != null);
-            const best = potentialShortcuts.reduce((prev, curr) => {
-                return prev?.size > curr?.size ? prev : curr;
-            }, potentialShortcuts[0]);
-
-            if (best) shortcuts[best.end.id] = best;
-        }
-        return Object.values(shortcuts);
-    };
-
-    const result: Shortcut[] = [];
-    for (const node of track) {
-        result.push(...getShortcuts(node));
-    }
-
-    return result;
 }
