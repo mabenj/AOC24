@@ -1,16 +1,8 @@
 import { PuzzleSolver } from "../types/puzzle-solver.ts";
 
-type Node = {
-    id: string;
-    x: number;
-    y: number;
-};
+type Node = { x: number; y: number };
 
-type Shortcut = {
-    start: Node;
-    end: Node;
-    savedTime: number;
-};
+type Shortcut = { start: Node; end: Node; savedTime: number };
 
 export default class Solver24D20 implements PuzzleSolver {
     private track: Node[] = [];
@@ -32,9 +24,9 @@ export default class Solver24D20 implements PuzzleSolver {
             this.track.push({
                 x: currentX,
                 y: currentY,
-                id: `${currentX},${currentY}`,
             });
             if (grid[currentY][currentX] === "E") break;
+
             const canGoNorth = canMoveTo(currentX, currentY - 1);
             const canGoEast = canMoveTo(currentX + 1, currentY);
             const canGoSouth = canMoveTo(currentX, currentY + 1);
@@ -59,24 +51,23 @@ export default class Solver24D20 implements PuzzleSolver {
     }
 }
 
-function getShortcuts(track: Node[], shortCutDuration: number) {
-    // Manhattan distance
-    const distanceBetween = (a: Node, b: Node) =>
+function getShortcuts(track: Node[], shortcutDuration: number) {
+    const manhattan = (a: Node, b: Node) =>
         Math.abs(a.x - b.x) + Math.abs(a.y - b.y);
 
     const shortcuts: Shortcut[] = [];
     for (let i = 0; i < track.length; i++) {
-        const startNode = track[i];
-        const fullDistance = track.length - i;
+        const start = track[i];
+        const legitDistance = track.length - i;
         for (let j = i + 1; j < track.length; j++) {
-            const endNode = track[j];
-            const delta = distanceBetween(startNode, endNode);
-            if (delta > shortCutDuration) continue;
-            const shortcutDistance = delta + track.length - j;
+            const end = track[j];
+            const delta = manhattan(start, end);
+            if (delta > shortcutDuration) continue;
+            const cheatDistance = delta + track.length - j;
             shortcuts.push({
-                start: startNode,
-                end: endNode,
-                savedTime: fullDistance - shortcutDistance,
+                start,
+                end,
+                savedTime: legitDistance - cheatDistance,
             });
         }
     }
