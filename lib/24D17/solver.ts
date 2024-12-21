@@ -38,37 +38,22 @@ export default class Solver24D17 implements PuzzleSolver {
         while (ip < this.program.length) {
             const opCode = this.program[ip++];
             const operand = this.program[ip++];
-            switch (opCode) {
-                case 0:
-                    registers["A"] = Math.floor(
-                        registers["A"] / Math.pow(2, combo(operand))
-                    );
-                    break;
-                case 1:
-                    registers["B"] ^= operand;
-                    break;
-                case 2:
-                    registers["B"] = combo(operand) % 8;
-                    break;
-                case 3:
-                    ip = registers["A"] === 0 ? ip : operand;
-                    break;
-                case 4:
-                    registers["B"] ^= registers["C"];
-                    break;
-                case 5:
-                    output.push(combo(operand) % 8);
-                    break;
-                case 6:
-                    registers["B"] = Math.floor(
-                        registers["A"] / Math.pow(2, combo(operand))
-                    );
-                    break;
-                case 7:
-                    registers["C"] = Math.floor(
-                        registers["A"] / Math.pow(2, combo(operand))
-                    );
-                    break;
+            if (opCode === 0) {
+                registers["A"] = registers["A"] >> combo(operand);
+            } else if (opCode === 1) {
+                registers["B"] ^= operand;
+            } else if (opCode === 2) {
+                registers["B"] = combo(operand) % 8;
+            } else if (opCode === 3) {
+                ip = registers["A"] === 0 ? ip : operand;
+            } else if (opCode === 4) {
+                registers["B"] ^= registers["C"];
+            } else if (opCode === 5) {
+                output.push(combo(operand) % 8);
+            } else if (opCode === 6) {
+                registers["B"] = registers["A"] >> combo(operand);
+            } else if (opCode === 7) {
+                registers["C"] = registers["A"] >> combo(operand);
             }
         }
 

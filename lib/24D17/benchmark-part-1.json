@@ -2,8 +2,8 @@
   "deno": "2.1.2",
   "os": "windows",
   "arch": "x86_64",
-  "memory": "31.93 GB",
-  "cpu": "AMD Ryzen 7 5800X3D 8-Core Processor",
-  "duration": 0.13859999999999673,
-  "timestamp": "2024-12-17T18:52:57.269Z"
+  "memory": "15.91 GB",
+  "cpu": "AMD Ryzen 5 3600 6-Core Processor",
+  "duration": 0.18290000000001783,
+  "timestamp": "2024-12-21T13:07:25.292Z"
 }
