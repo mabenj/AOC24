@@ -27,36 +27,56 @@ export default class Solver24D21 implements PuzzleSolver {
     }
 
     solvePart1() {
-        const adjList = buildAdjacencyList(NUMPAD);
+        const { adjacencyList } = buildAdjacencyList(NUMPAD);
+        let sum = 0;
         for (const code of this.codes) {
-            for (let i = 1; i < code.length; i++) {
-                const prev = code[i - 1];
-                const next = code[i];
-                const paths = findAllPaths(adjList, prev, next);
-                console.log(`Paths from ${prev} to ${next}:`);
-                for (const path of paths) {
-                    console.log(path.join(" -> "));
-                }
-                console.log("-------------");
-            }
+            const complexity = calculateComplexity(adjacencyList, code);
+            sum += complexity;
         }
-
-        // const robot4 = new Robot(DIRPAD); // robot4 is "us" and operates robot3
-        // const robot3 = new Robot(DIRPAD, robot4); // robot3 operates robot2
-        // const robot2 = new Robot(DIRPAD, robot3); // robot2 operates robot1
-        // const robot1 = new Robot(NUMPAD, robot2); // robot1 operates the actual numpad
-        // for (const code of this.codes.slice(0, 1)) {
-        //     for (const symbol of code) {
-        //         robot1.pressButton(symbol);
-        //     }
-        //     console.log(`${code}: ${robot4.buttonsPressed}`);
-        // }
-        return -1;
+        return sum;
     }
 
     solvePart2(): number | string {
         throw new Error("Method not implemented.");
     }
+}
+
+function calculateComplexity(
+    adjList: { [symbol: string]: string[] },
+    code: string
+) {
+    const robot4 = new Robot(DIRPAD); // robot4 is "us" and operates robot3
+    const robot3 = new Robot(DIRPAD, robot4); // robot3 operates robot2
+    const robot2 = new Robot(DIRPAD, robot3); // robot2 operates robot1
+    const robot1 = new Robot(NUMPAD, robot2); // robot1 operates the actual numpad
+
+    let bestBath: string[] | null = null;
+    for (let i = 1; i < code.length; i++) {
+        const prev = code[i - 1];
+        const next = code[i];
+        const paths = findAllPaths(adjList, prev, next);
+        for (const path of paths) {
+            // This is fucked, you are not supposed to press A after each symbol
+            // robot1.reset();
+            // for (const symbol of path) {
+            //     robot1.pressButton(symbol);
+            // }
+            // if (
+            //     bestBath === null ||
+            //     robot4.buttonPressHistory.length < bestBath.length
+            // ) {
+            //     bestBath = robot4.buttonPressHistory;
+            // }
+        }
+    }
+    const complexity = bestBath!.length * parseInt(code);
+    // console.log(
+    //     `Code: ${code} => ${bestBath?.length} * ${parseInt(
+    //         code
+    //     )} [${bestBath?.join("")}] }`
+    // );
+    // console.log("--------------------");
+    return complexity;
 }
 
 class Robot {
@@ -68,32 +88,24 @@ class Robot {
 
     constructor(pad: (string | null)[][], puppeteer: Robot | null = null) {
         this.puppeteer = puppeteer;
-        this.adjacencyList = {};
-        this.symbolCoordinates = {};
         this.buttonHistory = [];
-        for (let y = 0; y < pad.length; y++) {
-            for (let x = 0; x < pad[y].length; x++) {
-                const symbol = pad[y][x];
-                if (symbol === null) continue;
-                this.symbolCoordinates[symbol] = { x, y };
-                const north = pad[y - 1]?.[x];
-                const south = pad[y + 1]?.[x];
-                const west = pad[y]?.[x - 1];
-                const east = pad[y]?.[x + 1];
-                const neighbors = [north, south, west, east].filter(
-                    (n) => n != null
-                );
-                this.adjacencyList[symbol] = neighbors;
-            }
-        }
+        const { adjacencyList, symbolCoordinates } = buildAdjacencyList(pad);
+        this.adjacencyList = adjacencyList;
+        this.symbolCoordinates = symbolCoordinates;
     }
 
-    get buttonsPressed() {
-        return this.buttonHistory.join("");
+    get buttonPressHistory() {
+        return this.buttonHistory;
+    }
+
+    reset() {
+        this.buttonHistory = [];
+        this.currentSymbol = "A";
+        this.puppeteer?.reset();
     }
 
     pressButton(button: string) {
-        const path = bfs(this.adjacencyList, this.currentSymbol, button);
+        const path = this.getShortestPathTo(button);
         for (let i = 1; i < path.length; i++) {
             const prevSymbol = path[i - 1];
             const nextSymbol = path[i];
@@ -123,15 +135,50 @@ class Robot {
             throw new Error(`Invalid direction: ${prev} -> ${next}`);
         }
     }
+
+    private getShortestPathTo(targetSymbol: string): string[] {
+        const start = this.currentSymbol;
+        const visited = new Set<string>([start]);
+        const queue: { symbol: string; distance: number }[] = [
+            { symbol: start, distance: 0 },
+        ];
+        const previous: { [symbol: string]: string | null } = { [start]: null };
+
+        while (queue.length > 0) {
+            let { symbol, distance } = queue.shift()!;
+            if (symbol === targetSymbol) {
+                const path = [symbol];
+                while (previous[symbol]) {
+                    symbol = previous[symbol]!;
+                    path.unshift(symbol);
+                }
+                return path;
+            }
+
+            const neighbors = this.adjacencyList[symbol];
+            for (const neighbor of neighbors) {
+                if (visited.has(neighbor)) {
+                    continue;
+                }
+                visited.add(neighbor);
+                queue.push({ symbol: neighbor, distance: distance + 1 });
+                previous[neighbor] = symbol;
+            }
+        }
+
+        throw new Error(`No path found: ${start} -> ${targetSymbol}`);
+    }
 }
 
 function buildAdjacencyList(pad: (string | null)[][]) {
     const adjacencyList: { [symbol: string]: string[] } = {};
+    const symbolCoordinates: { [symbol: string]: { x: number; y: number } } =
+        {};
     for (let y = 0; y < pad.length; y++) {
         for (let x = 0; x < pad[y].length; x++) {
             const symbol = pad[y][x];
             if (symbol === null) continue;
-            // this.symbolCoordinates[symbol] = { x, y };
+            symbolCoordinates[symbol] = { x, y };
             const north = pad[y - 1]?.[x];
             const south = pad[y + 1]?.[x];
             const west = pad[y]?.[x - 1];
@@ -142,7 +189,7 @@ function buildAdjacencyList(pad: (string | null)[][]) {
             adjacencyList[symbol] = neighbors;
         }
     }
-    return adjacencyList;
+    return { adjacencyList, symbolCoordinates };
 }
 
 function findAllPaths(
@@ -167,40 +214,4 @@ function findAllPaths(
 
     dfs(start, []);
     return allPaths;
-}
-
-function bfs(
-    adjacencyList: { [symbol: string]: string[] },
-    start: string,
-    end: string
-): string[] {
-    const visited = new Set<string>([start]);
-    const queue: { symbol: string; distance: number }[] = [
-        { symbol: start, distance: 0 },
-    ];
-    const previous: { [symbol: string]: string | null } = { [start]: null };
-
-    while (queue.length > 0) {
-        let { symbol, distance } = queue.shift()!;
-        if (symbol === end) {
-            const path = [symbol];
-            while (previous[symbol]) {
-                symbol = previous[symbol]!;
-                path.unshift(symbol);
-            }
-            return path;
-        }
-
-        const neighbors = adjacencyList[symbol];
-        for (const neighbor of neighbors) {
-            if (visited.has(neighbor)) {
-                continue;
-            }
-            visited.add(neighbor);
-            queue.push({ symbol: neighbor, distance: distance + 1 });
-            previous[neighbor] = symbol;
-        }
-    }
-
-    throw new Error(`No path found: ${start} -> ${end}`);
 }
