@@ -2,8 +2,8 @@
   "deno": "2.1.2",
   "os": "windows",
   "arch": "x86_64",
-  "memory": "31.76 GB",
-  "cpu": "Intel(R) Core(TM) i7-9850H CPU @ 2.60GHz",
-  "duration": 1749.0624,
-  "timestamp": "2024-12-23T13:21:42.969Z"
+  "memory": "15.91 GB",
+  "cpu": "AMD Ryzen 5 3600 6-Core Processor",
+  "duration": 73.80890000000005,
+  "timestamp": "2024-12-23T23:52:18.060Z"
 }
