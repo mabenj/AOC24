@@ -86,7 +86,7 @@ async function generateReadme(puzzles: PuzzleData[]) {
             .sort((a, b) => b - a);
         for (const year of years) {
             result.push(`| 20${year} | Part 1 | Part 2 |`);
-            result.push(`| :--- | ---: | ---: |`);
+            result.push(`| :--- | :--- | :--- |`);
             const puzzlesByDay = groupBy(puzzlesByYear[year], "day");
             const days = Object.keys(puzzlesByDay)
                 .map(Number)
@@ -102,18 +102,18 @@ async function generateReadme(puzzles: PuzzleData[]) {
                 const part2Hw = generateHwString(part2?.benchmark);
                 const part1HwRef = hardwareConfigs.indexOf(part1Hw ?? "") + 1;
                 const part2HwRef = hardwareConfigs.indexOf(part2Hw ?? "") + 1;
-                const part1Duration = part1?.benchmark?.duration
-                    ? prettyDuration(part1.benchmark.duration)
-                    : "N/A";
-                const part2Duration = part2?.benchmark?.duration
-                    ? prettyDuration(part2.benchmark.duration)
-                    : "N/A";
+                const part1Cell = part1?.benchmark?.duration
+                    ? `⭐ (${prettyDuration(
+                          part1.benchmark.duration
+                      )}) <sup>${part1HwRef}</sup>`
+                    : "❌";
+                const part2Cell = part2?.benchmark?.duration
+                    ? `⭐ (${prettyDuration(
+                          part2.benchmark.duration
+                      )}) <sup>${part2HwRef}</sup>`
+                    : "❌";
                 result.push(
-                    `| [Day ${day}](/lib/${year}D${day}/solver.ts) | ${part1Duration} ${
-                        part1HwRef ? "<sup>" + part1HwRef + "</sup>" : ""
-                    } | ${part2Duration} ${
-                        part2HwRef ? "<sup>" + part2HwRef + "</sup>" : ""
-                    } |`
+                    `| [Day ${day}](/lib/${year}D${day}/solver.ts) | ${part1Cell} | ${part2Cell} |`
                 );
             }
             result.push("");
