@@ -1,44 +1,9 @@
 import { PuzzleSolver } from "../types/puzzle-solver.ts";
 
-const EXAMPLE = `kh-tc
-qp-kh
-de-cg
-ka-co
-yn-aq
-qp-ub
-cg-tb
-vc-aq
-tb-ka
-wh-tc
-yn-cg
-kh-ub
-ta-co
-de-co
-tc-td
-tb-wq
-wh-td
-ta-ka
-td-qp
-aq-cg
-wq-ub
-ub-vc
-de-ta
-wq-aq
-wq-vc
-wh-yn
-ka-de
-kh-ta
-co-tc
-wh-qp
-tb-vc
-td-yn
-`;
-
 export default class Solver24D23 implements PuzzleSolver {
     private adjacencyList = new Map<string, string[]>();
 
     parseInput(input: string[]) {
-        // input = EXAMPLE.trim().split("\n");
         for (const line of input.filter((line) => !!line)) {
             const [a, b] = line.split("-");
             if (!this.adjacencyList.has(a)) {
@@ -81,7 +46,28 @@ export default class Solver24D23 implements PuzzleSolver {
         return groupsOf3.size;
     }
 
-    solvePart2(): number | string {
-        throw new Error("Method not implemented.");
+    solvePart2() {
+        let biggestGroup = new Array<string>();
+        for (const computer of this.adjacencyList.keys()) {
+            const group = this.getInterconnected(computer);
+            if (group.length > biggestGroup.length) biggestGroup = group;
+        }
+
+        return biggestGroup.sort().join(",");
+    }
+
+    private getInterconnected(computer: string) {
+        const neighbors = this.adjacencyList.get(computer)!;
+        let group = new Set([computer, ...neighbors]);
+        for (const neighbor of neighbors) {
+            if (!group.has(neighbor)) {
+                continue;
+            }
+            const neighborsOfNeighbor = this.adjacencyList.get(neighbor)!;
+            group = group.intersection(
+                new Set([neighbor, ...neighborsOfNeighbor])
+            );
+        }
+        return [...group];
     }
 }
