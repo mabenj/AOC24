@@ -32,6 +32,7 @@
 | [Day 22](/lib/24D22/solver.ts) | ⭐ (74ms) <sup>1</sup> | ⭐ (1.5s) <sup>1</sup> |
 | [Day 23](/lib/24D23/solver.ts) | ⭐ (4ms) <sup>1</sup> | ⭐ (10ms) <sup>1</sup> |
 | [Day 24](/lib/24D24/solver.ts) | ⭐ (1ms) <sup>1</sup> | ❌ |
+| [Day 25](/lib/24D25/solver.ts) | ⭐ (3ms) <sup>1</sup> | ❌ |
 
 | 2023 | Part 1 | Part 2 |
 | :--- | :--- | :--- |
@@ -42,7 +43,7 @@
 | [Day 5](/lib/23D5/solver.ts) | ⭐ (0.8ms) <sup>3</sup> | ⭐ (14.5s) <sup>3</sup> |
 
 [![Generate README](https://github.com/mabenj/aoc-deno-ts/actions/workflows/generate-readme.yml/badge.svg)](https://github.com/mabenj/aoc-deno-ts/actions/workflows/generate-readme.yml)
-> Generated at Wed, 25 Dec 2024 13:32:06 GMT
+> Generated at Wed, 25 Dec 2024 14:11:54 GMT
 
 ## Prerequisites
 
